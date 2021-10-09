@@ -1,7 +1,10 @@
 # Powerup Expansion Kit
 Makes possible to expand the maximum amount of powerup states.
 
-# Misc info
+## Issues
+- Check the issues page to know what's missing from the project
+
+## Misc info
 - Powerup and GFX insertion determined by list files
 - No bloat/powerups included other than the default powerups
 - 32x32 player & customizable cape/5th tile
@@ -10,6 +13,9 @@ Makes possible to expand the maximum amount of powerup states.
 - Easy to understand folder structure, everything customizable is contained in two folders
 - Automatic handling of pointers, data insertion, freespace management and other stuff
 - Literally better than the horrible mess that the Custom Powerup patch was
+
+# Disclaimer
+I have zero intentions of providing support to people who are 100% clueless about programming for the SNES, this project is made to fulfill my own purposes and I'd like to keep it that way. However, I will provide assistance to those who want to study the code I made for the project regardless of their intention. I also don't really care if you borrow code, hijacks, ideas or whatever from this repo, it's public after all.
 
 ## Requirements
 * Asar 1.81 (idk if I'm using features from it, might as well force people to update their Asar)
