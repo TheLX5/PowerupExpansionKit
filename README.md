@@ -7,7 +7,6 @@ Makes possible to expand the maximum amount of powerup states.
 ## Misc info
 - Powerup and GFX insertion determined by list files
 - No bloat/powerups included other than the default powerups
-- 32x32 player & customizable cape/5th tile
 - No dynamic powerup items and projectiles (this sucked so much omg)
 - List parsing powered by asar (no external programs needed = no need to support too many things at once)
 - Easy to understand folder structure, everything customizable is contained in two folders
