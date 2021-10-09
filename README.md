@@ -14,7 +14,7 @@ Makes possible to expand the maximum amount of powerup states.
 - Literally better than the horrible mess that the Custom Powerup patch was
 
 # Disclaimer
-I have zero intentions of providing support to people who are 100% clueless about programming for the SNES, this project is made to fulfill my own purposes and I'd like to keep it that way. However, I will provide assistance to those who want to study the code I made for the project regardless of their intention. I also don't really care if you borrow code, hijacks, ideas or whatever from this repo, it's public after all.
+I have zero intentions of providing support to people who are 100% clueless about programming for the SNES, this project is made to fulfill my own purposes and I'd like to keep it that way. However, I will provide assistance to those who want to study the code I made for the project regardless of their intention. I also don't really care if you borrow code, hijacks, ideas or whatever from this repo, it's public after all. File organization and other things are subject to change.
 
 ## Requirements
 * Asar 1.81 (idk if I'm using features from it, might as well force people to update their Asar)
