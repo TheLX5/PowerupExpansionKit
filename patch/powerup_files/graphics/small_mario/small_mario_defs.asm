@@ -1,0 +1,1 @@
+!small_mario_walk_frames = 2
