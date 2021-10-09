@@ -1,10 +1,8 @@
 ;##################################################################################################
-;# Custom powerups patch by lx5
-;# Original version by MarioE
-;# Asar version by Lui37
+;# Powerup expansion kit - Made by lx5
 
     print ""
-    print "Powerup expansion kit v1.00 - Made by lx5"
+    print "Powerup expansion kit - Made by lx5"
     print "Readme & documentation: later lol"
     print ""
 
