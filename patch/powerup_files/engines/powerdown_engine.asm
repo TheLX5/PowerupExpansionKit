@@ -27,6 +27,7 @@ macro powerdown_smoke(power_num, sfx_num, sfx_port)
     inc $9D
     lda.b #<power_num>
     sta $19
+    jsr hide_mario
 endmacro
 
 macro powerdown_palette(power_num, sfx_num, sfx_port)
@@ -45,6 +46,14 @@ macro powerdown_palette(power_num, sfx_num, sfx_port)
 endmacro
 
 reset bytes
+
+hide_mario:
+    phy
+    lda #$FF
+    sta $78
+    jsl $00E2BD
+    ply
+    rts
 
 powerdown:
     phx
