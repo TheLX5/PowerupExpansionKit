@@ -28,9 +28,9 @@ dma_engine:
     tcd 
 
 .palette_dma
-    ldy #$86
+    ldy.b #!palette_transfer_start
     sty $2121
-    lda #$0014
+    lda.w #(($1+!palette_transfer_end-!palette_transfer_start)*2)
     sta.b $05|(!dma_channel*$10)
     lda #$2200
     sta.b $00|(!dma_channel*$10)
