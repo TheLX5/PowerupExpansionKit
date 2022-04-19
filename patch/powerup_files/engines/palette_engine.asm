@@ -52,6 +52,8 @@ custom_palettes:
     jml custom_palettes_return
 
 .star
+    ldx $149B|!addr
+    bne .pal_anim
     and #$03
     sta $00
     asl 
@@ -63,6 +65,20 @@ custom_palettes:
     sta !player_palette_pointer
     lda.l custom_star_palettes_pointers+1,x
     bra .end
+
+.pal_anim
+    and #$03
+    sta $00
+    asl 
+    clc 
+    adc $00
+    tax
+    rep #$20
+    lda.l custom_palette_animation_pointers,x
+    sta !player_palette_pointer
+    lda.l custom_palette_animation_pointers+1,x
+    bra .end
+
 
 custom_palettes_pointers:
     !i #= 0
@@ -117,6 +133,22 @@ custom_palettes_indexes:
         !i #= !i+1
     endif
 
+custom_palette_animation_pointers:
+    dl palette_animation_frame_0
+    dl palette_animation_frame_1
+    dl palette_animation_frame_2
+    dl palette_animation_frame_3
+
+palette_animation_frame_0:
+    incbin "../graphics/palette_animation/frame_0.mw3":(!palette_transfer_start*2)-(1+!palette_transfer_end*2)
+palette_animation_frame_1:
+    incbin "../graphics/palette_animation/frame_1.mw3":(!palette_transfer_start*2)-(1+!palette_transfer_end*2)
+palette_animation_frame_2:
+    incbin "../graphics/palette_animation/frame_2.mw3":(!palette_transfer_start*2)-(1+!palette_transfer_end*2)
+palette_animation_frame_3:
+    incbin "../graphics/palette_animation/frame_3.mw3":(!palette_transfer_start*2)-(1+!palette_transfer_end*2)
+
+
 custom_star_palettes_pointers:
     dl star_palette_frame_0
     dl star_palette_frame_1
@@ -125,10 +157,10 @@ custom_star_palettes_pointers:
 
 custom_star_palettes_data:
     star_palette_frame_0:
-;        incbin "star_palette_frame_0.bin":(!palette_transfer_start*2)-(1+!palette_transfer_end*2)
+        incbin "../graphics/star_palette/frame_0.mw3":(!palette_transfer_start*2)-(1+!palette_transfer_end*2)
     star_palette_frame_1:
-;        incbin "star_palette_frame_1.bin":(!palette_transfer_start*2)-(1+!palette_transfer_end*2)
+        incbin "../graphics/star_palette/frame_1.mw3":(!palette_transfer_start*2)-(1+!palette_transfer_end*2)
     star_palette_frame_2:
-;        incbin "star_palette_frame_2.bin":(!palette_transfer_start*2)-(1+!palette_transfer_end*2)
+        incbin "../graphics/star_palette/frame_2.mw3":(!palette_transfer_start*2)-(1+!palette_transfer_end*2)
     star_palette_frame_3:
-;        incbin "star_palette_frame_3.bin":(!palette_transfer_start*2)-(1+!palette_transfer_end*2)
+        incbin "../graphics/star_palette/frame_3.mw3":(!palette_transfer_start*2)-(1+!palette_transfer_end*2)
