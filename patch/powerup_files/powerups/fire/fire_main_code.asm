@@ -1,5 +1,5 @@
 ;##################################################################################################
-;# Powerup: Fire Flower Mario
+;# Powerup: Fire Mario
 ;# Author: Nintendo
 ;# Description: Default powerup $03 for Mario. Behaves exactly like the original game.
 ;#
@@ -43,10 +43,10 @@
     rts
 
 .found_slot
-    lda.b #!fire_flower_shoot_sfx
-    sta !fire_flower_shoot_sfx_port|!addr
+    lda.b #!fire_shoot_sfx
+    sta !fire_shoot_sfx_port|!addr
     
-    lda.b #!fire_flower_pose_timer
+    lda.b #!fire_pose_timer
     sta !player_shoot_pose_timer
     
     lda.b #!fireball_extended_num

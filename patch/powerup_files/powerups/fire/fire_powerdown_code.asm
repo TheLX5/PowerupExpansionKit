@@ -1,5 +1,5 @@
 ;##################################################################################################
-;# Powerup: Fire Flower Mario
+;# Powerup: Fire Mario
 ;# Author: Nintendo
 ;# Description: Default powerup $03 for Mario. Behaves exactly like the original game.
 ;#
@@ -7,5 +7,5 @@
 ;#
 ;# Note: In order to use this code, set the powerdown effect to Custom in the defs file.
 	
-    %powerdown_!{fire_flower_powerdown_action}(!fire_flower_powerdown_power_num, !fire_flower_powerdown_sfx_num, !fire_flower_powerdown_sfx_port)
+    %powerdown_!{fire_powerdown_action}(!fire_powerdown_power_num, !fire_powerdown_sfx_num, !fire_powerdown_sfx_port)
     rts

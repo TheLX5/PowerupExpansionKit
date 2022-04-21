@@ -1,5 +1,5 @@
 ;##################################################################################################
-;# Powerup: Fire Flower Mario
+;# Powerup: Fire Mario
 ;# Author: Nintendo
 ;# Description: Default powerup $03 for Mario. Behaves exactly like the original game.
 ;#
