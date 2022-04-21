@@ -29,7 +29,7 @@ macro setup_warn_msg(msg)
 endmacro
 
 
-print "Processed powerups:"
+print "Detected powerups:"
 
 ;# Initialize defines
 !i #= 0
@@ -174,6 +174,157 @@ else
 endif 
 
 ;##################################################################################
+;# Items
+
+
+if !_error_detected == 0
+;# Initialize defines
+!i #= 0
+while !i != 128
+    %internal_number_to_string(!i)
+    !{item_!{_num}_internal_name} := "0"
+    !{item_!{_num}_path} := "0"
+    !i #= !i+1
+endif
+
+!max_item_num = 0
+
+;# Current position in the list file
+!_position #= 0
+
+;# Current line being parsed
+!_line = 1
+
+print "Detected powerup items:"
+
+;# Loop until EOF
+while readfile1("!item_list_path", !_position, $FF) != $FF
+    ;# Process number
+        !_item_num = ""
+        %hex_2_ascii(readfile1("!item_list_path", !_position, $FF))
+        if !_result_hex == $20
+            %setup_error_msg("Line !_line: The item numbers shouldn't contain leading spaces.")
+        elseif !_result_hex < $30 || !_result_hex >= $67
+            %setup_error_msg("Line !_line: Invalid item number.")
+        elseif !_result_hex >= $3A && !_result_hex <= $40
+            %setup_error_msg("Line !_line: Invalid item number.")
+        elseif !_result_hex >= $47 && !_result_hex <= $60
+            %setup_error_msg("Line !_line: Invalid item number.")
+        else
+            !_position #= !_position+1
+            !_item_num += !_result
+            !_item_num := !_item_num
+        endif
+
+        if !_error_detected == 0
+            !_result_hex = readfile1("!item_list_path", !_position, $FF)
+            if !_result_hex == $20
+                %setup_error_msg("Line !_line: The item numbers should be 2 digits long.")
+            elseif !_result_hex < $30 || !_result_hex >= $67
+                %setup_error_msg("Line !_line: Invalid item number.")
+            elseif !_result_hex >= $3A && !_result_hex <= $40
+                %setup_error_msg("Line !_line: Invalid item number.")
+            elseif !_result_hex >= $47 && !_result_hex <= $60
+                %setup_error_msg("Line !_line: Invalid item number.")
+            else
+                %hex_2_ascii(readfile1("!item_list_path", !_position, $FF))
+                !_position #= !_position+1
+                !_item_num += !_result
+                !_item_num := !_item_num
+            endif
+        endif
+
+    ;# Check if it's a duplicated item number
+        !_exit = 0
+        if !_error_detected == 1
+            !_position #= $FFFFFE
+            !_exit = 1
+        else
+            if not(stringsequal("!{item_!{_item_num}_path}", "0"))
+                %setup_error_msg("Line !_line: Duplicated item number.")
+                !_position #= $FFFFFE
+                !_exit = 1
+            endif
+        endif
+
+    ;# Detect proper spacing
+        if !_exit == 0
+            !_result_hex = readfile1("!item_list_path", !_position, $FF)
+            if !_result_hex != $20
+                %setup_error_msg("Line !_line: Invalid list entry.")
+                !_position #= $FFFFFE
+                !_exit = 1
+            endif 
+        endif
+
+    ;# Process item name
+        !_position #= !_position+1
+        !_item_name = ""
+
+        while !_exit != 1
+            %hex_2_ascii(readfile1("!item_list_path", !_position, $FF))
+            if !_result_hex == $FF
+                !_exit = 1
+            elseif !_result_hex == $0D
+                !_position #= !_position+1
+                if readfile1("!item_list_path", !_position, $FF) == $0A
+                    !_position #= !_position+1
+                endif
+                !_exit = 1
+            elseif !_result_hex == $0A
+                !_position #= !_position+1
+                !_exit = 1
+            elseif !_result_hex == $20
+                %setup_error_msg("Line !_line: Spaces in item names aren't supported.")
+                !_position #= $FFFFFF
+                !_exit = 1
+            elseif !_result_hex == $FE
+                %setup_error_msg("Line !_line: Unsupported character detected.")
+                !_position #= $FFFFFF
+                !_exit = 1
+            else
+                !_item_name += !_result
+                !_item_name := !_item_name
+                !_position #= !_position+1
+            endif
+        endif
+
+    ;# Create defines
+        !{item_!{_item_num}_internal_name} := !_item_name
+        !{item_!{_item_num}_path} := "./items/!_item_name"
+        !{!{_item_name}_item_num} := !_item_num
+        !{!{_item_name}_item_num_string} := "!_item_num"
+
+        if !_item_num >= !max_item_num
+            !max_item_num #= !_item_num+1
+        endif
+
+        if !_position < $FFFFFE
+            print "      Item !{!{_item_name}_item_num}: !{item_!{_item_num}_internal_name}"
+        endif
+
+    ;# Restore
+        !_item_num = ""
+        !_item_name = ""
+        !_exit = 0
+        !_line #= !_line+1
+
+endif
+
+
+if !_position >= $FFFFFE
+    print ""
+    print "!!!!! ERROR !!!!!"
+    print "!_error_msg"
+    print ""
+
+else
+
+    print ""
+endif
+endif
+
+;##################################################################################
 ;# Graphics
 
 if !_error_detected == 0
@@ -194,7 +345,7 @@ endif
 ;# Current line being parsed
 !_line = 1
 
-print "Processed graphics:"
+print "Detected graphics:"
 while readfile1("!gfx_list_path", !_position, $FF) != $FF
     ;# Process number
         !_gfx_num = ""

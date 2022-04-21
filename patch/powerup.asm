@@ -2,7 +2,7 @@
 ;# Powerup expansion kit - Made by lx5
 
     print ""
-    print "Powerup expansion kit - Made by lx5"
+    print "Powerup expansion kit v1.0 - Made by lx5"
     print "Readme & documentation: later lol"
     print ""
 
@@ -70,6 +70,7 @@ if !_error_detected == 0
     %insert_file("engines/player_exgfx_engine.asm")
     %insert_file("engines/extra_tile_engine.asm")
     %insert_file("engines/powerdown_engine.asm")
+    %insert_file("engines/item_box_engine.asm")
 
     ;%insert_file("engines/cape_engine.asm")
 
