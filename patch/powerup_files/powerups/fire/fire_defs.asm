@@ -38,21 +38,12 @@
 !fire_powerdown_sfx_port = $1DF9
 
 
+
 ;################################################
-;# Powerup item 
-;# NOTE: UNUSED FOR THIS POWERUP
+;# Item ID
 
-;# Item ID for the collectible powerup item
-!fire_item_id = $03
-
-;# YXPPCCCT properties for this powerup item. Only the CCCT portion is used.
-!fire_item_prop = $0B
-
-;# DSS ExGFX ID of the powerup item
-!fire_dss_id = !dss_id_fire
-
-;# DSS ExGFX Page of the powerup item
-!fire_dss_page = $00
+;# Item ID associated to this powerup.
+!fire_item_id = $01
 
 
 ;################################################

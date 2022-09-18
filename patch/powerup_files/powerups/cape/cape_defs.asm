@@ -38,16 +38,10 @@
 
 
 ;################################################
-;# Powerup item
+;# Item ID
 
-;# YXPPCCCT properties for this powerup item. Only the CCCT portion is used.
-!cape_item_prop = $05
-
-;# DSS ExGFX ID of the powerup item
-!cape_dss_id = !dss_id_feather
-
-;# DSS ExGFX Page of the powerup item
-!cape_dss_page = $00
+;# Item ID associated to this powerup.
+!cape_item_id = $03
 
 
 ;################################################

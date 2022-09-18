@@ -11,6 +11,16 @@
 
 
 ;################################################
+;# Collected behavior
+
+;# Item overwrites whatever is inside the item box when collected
+!feather_overwrite_item_box = !yes
+
+;# Item can be put in the item box
+!feather_put_in_box = !yes
+
+
+;################################################
 ;# DSS Settings
 
 ;# DSS ExGFX ID of the powerup item

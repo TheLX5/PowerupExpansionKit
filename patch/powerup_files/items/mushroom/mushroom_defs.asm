@@ -11,6 +11,15 @@
 
 
 ;################################################
+;# Collected behavior
+
+;# Item overwrites whatever is inside the item box when collected
+!mushroom_overwrite_item_box = !no
+
+;# Item can be put in the item box
+!mushroom_put_in_box = !yes
+
+;################################################
 ;# DSS Settings
 
 ;# DSS ExGFX ID of the powerup item

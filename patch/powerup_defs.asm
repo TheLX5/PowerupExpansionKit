@@ -91,10 +91,13 @@ include
 !disable_item_box = !no
 
 ;# Play the Item Box drop sound effect    
-!item_box_sfx = $0C
+!item_box_drop_sfx = $0C
+!item_box_drop_port = $1DFC
 
-;# Play the powerup sound effect
-!powerup_sfx = $0B
+;# Sound effect for "put powerup in item box" action
+!powerup_in_item_box_sfx = $0B
+!powerup_in_item_box_port = $1DFC
+
 
 ;# X position of the item in the Item Box
 !item_box_item_x_pos = $78
@@ -150,7 +153,8 @@ macro setup_general_defines(num)
     !powerup_<num>_can_spinjump := !{!{_name}_can_spinjump}
     !powerup_<num>_can_slide := !{!{_name}_can_slide}
     !powerup_<num>_can_crouch := !{!{_name}_can_crouch}
-    
+
+    !powerup_<num>_item_id := !{!{_name}_item_id}
 endmacro
 
 macro setup_general_gfx_defines(num)
@@ -165,6 +169,9 @@ macro setup_general_item_defines(num)
     !item_<num>_sprite_prop := !{!{_name}_sprite_prop}&$0F
     !item_<num>_dss_id := !{!{_name}_dss_id}
     !item_<num>_dss_page := !{!{_name}_dss_page}&$01
+
+    !item_<num>_overwrite_item_box := !{!{_name}_overwrite_item_box}&$01
+    !item_<num>_put_in_box := !{!{_name}_put_in_box}&$01
 endmacro
 
 ;################################################
@@ -321,7 +328,8 @@ endif
 !player_spinjump                = $140D|!addr
 !player_sliding                 = $13ED|!addr
 
-!player_item_box                = $0DBC|!addr
+!player_item_box_2              = $0DBC|!addr
+!player_item_box                = $0DC2|!addr
 !player_coins                   = $0DBF|!addr
 !player_lives                   = $0DBE|!addr
 
@@ -340,6 +348,7 @@ endif
 !player_star_timer              = $1490|!addr
 !player_dash_timer              = $13E4|!addr
 !player_shoot_pose_timer        = $149C|!addr
+!player_animation_timer         = $1496|!addr
 
 !cape_interaction_flag          = $13E8|!addr
 !cape_interaction_x_pos         = $13E9|!addr
@@ -355,6 +364,16 @@ endif
 !level_water_flag               = $85
 !level_slippery_flag            = $86
 
+;################################################
+;# Item sprite tables & RAM addresses
+
+;#######################
+;# Sprite tables
+
+!item_falling                   = !1534
+!item_direction                 = !157C
+!item_berry_flag                = !160E
+!item_roulette_flag             = !151C
 
 ;################################################
 ;# Free RAM allocation

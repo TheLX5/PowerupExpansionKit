@@ -25,18 +25,10 @@
 
 
 ;################################################
-;# Powerup item
-;# NOTE: UNUSED FOR THIS POWERUP
+;# Item ID
 
-;# YXPPCCCT properties for this powerup item. Only the CCCT portion is used.
-!small_item_prop = $FF
-
-;# DSS ExGFX ID of the powerup item
-!small_dss_id = $FF
-
-;# DSS ExGFX Page of the powerup item
-!small_dss_page = $FF
-
+;# Item ID associated to this powerup.
+!small_item_id = $FF
 
 ;################################################
 ;# Graphics/Player image

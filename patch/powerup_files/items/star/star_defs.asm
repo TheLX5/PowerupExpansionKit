@@ -11,6 +11,16 @@
 
 
 ;################################################
+;# Collected behavior
+
+;# Item overwrites whatever is inside the item box when collected
+!star_overwrite_item_box = !no
+
+;# Item can be put in the item box
+!star_put_in_box = !yes
+
+
+;################################################
 ;# DSS Settings
 
 ;# DSS ExGFX ID of the powerup item

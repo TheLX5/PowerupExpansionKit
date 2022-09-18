@@ -28,7 +28,6 @@ if !disable_item_box == !no
         lda.l item_box_graphics-1,x
         jsl find_and_queue_gfx
         bcc .return
-        ldx $0DC2|!addr
         lda !dss_tile_buffer+$00
         sta $0202|!addr,y
         lda.l item_box_props-1,x
@@ -96,6 +95,7 @@ if !disable_item_box == !no
 endif
 
 find_and_queue_gfx:
+    phx
     pha 
     xba
     and #$01
@@ -110,4 +110,5 @@ find_and_queue_gfx:
     lda.l $01DF78+3+2+2,x
     sta $02
     pla 
+    plx
     jml [!dp]

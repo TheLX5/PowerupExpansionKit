@@ -293,6 +293,7 @@ while readfile1("!item_list_path", !_position, $FF) != $FF
         !{item_!{_item_num}_internal_name} := !_item_name
         !{item_!{_item_num}_path} := "./items/!_item_name"
         !{!{_item_name}_item_num} := !_item_num
+        !{item_!{_item_num}_item_num} := !_item_num
         !{!{_item_name}_item_num_string} := "!_item_num"
 
         if !_item_num >= !max_item_num

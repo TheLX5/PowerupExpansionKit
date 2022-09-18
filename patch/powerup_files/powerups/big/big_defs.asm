@@ -38,16 +38,10 @@
 
 
 ;################################################
-;# Powerup item
+;# Item ID
 
-;# YXPPCCCT properties for this powerup item. Only the CCCT portion is used.
-!big_item_prop = $09
-
-;# DSS ExGFX ID of the powerup item
-!big_dss_id = !dss_id_mushroom
-
-;# DSS ExGFX Page of the powerup item
-!big_dss_page = $00
+;# Item ID associated to this powerup.
+!big_item_id = $00
 
 
 ;################################################
