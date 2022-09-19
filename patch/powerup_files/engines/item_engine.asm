@@ -134,20 +134,24 @@ give_item_handler:
     plb
     jml give_item_return
 
+default_item:
 do_nothing:
-    lda #$0A
-    sta $1DF9|!addr
-    lda #$04
-    ldy !item_falling,x
-    bne .from_item_box
-    jsl give_points
-.from_item_box
+    if !default_collected_sfx_num != $00
+        lda.b #!default_collected_sfx_num
+        sta.w !default_collected_sfx_port|!addr
+    endif
+    if !default_can_give_points == !yes
+        lda.b #!default_collected_points
+        ldy !item_falling,x
+        bne .from_item_box
+        jsl give_points
+    .from_item_box
+    endif
     rts
 
 
 give_powerup:
-    wdm 
-    sta $05
+    sta $05                             ; current item number
     rep #$30
     and #$00FF
     asl 

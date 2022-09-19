@@ -10,7 +10,6 @@ pullpc
 reset bytes
 
 main_engine:
-
     ; reset a bunch of flags
 .reset
     lda #$00
