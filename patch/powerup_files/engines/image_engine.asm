@@ -189,6 +189,31 @@ player_poses_handler:
     jsr ($0000|!dp,x)
 .return_image
 
+if !ENABLE_POSE_DEBUG == !yes
+        lda $71
+        bne ++
+        lda $16
+        and #$04
+        beq +
+        lda !debug_ram
+        dec 
+        bmi +
+        sta !debug_ram
+    +   
+        lda $16
+        and #$08
+        beq +
+        lda !debug_ram
+        inc 
+        cmp #$80
+        bcs +
+        sta !debug_ram
+    +   
+        lda !debug_ram
+        sta !player_pose_num
+    ++
+    endif
+
     lda !player_graphics_bypass
     bne .skip_setting_index
 .regular_gfx_rules

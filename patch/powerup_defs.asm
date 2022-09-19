@@ -28,8 +28,8 @@ include
 ;#  DEBUG
 
 ;# Enables debugging features:
-;#  - Change powerup with L/R while in the overworld.
-!ENABLE_DEBUG = !no
+;#  - Change player poses with UP/DOWN
+!ENABLE_POSE_DEBUG = !no
 
 ;# Prints extra information in the console
 !ENABLE_VERBOSE = !no
@@ -441,6 +441,8 @@ endif
 
 !player_backup_blocked_status   = !player_disable_itembox+1
 !player_backup_slippery_status  = !player_backup_blocked_status+1
+
+!debug_ram                      = !player_backup_slippery_status+1
 
 !extra_sprite_ram               = !SprSize*4
 !extra_extended_ram             = !Extendedsize*5
