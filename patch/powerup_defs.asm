@@ -218,7 +218,7 @@ macro tilemap_original(tilemap_top, tilemap_bottom, tilemap_extra, tile_index, d
     tay
     lda.w <tile_index>,y
     sta $05
-    ldy $13E0|!addr
+    ldy !player_pose_num
     lda.w <tilemap_extra>,y
     sta $06
     lda.w <tilemap_top>,y
@@ -233,7 +233,7 @@ macro tilemap_large(tilemap, tile_index, data_00DCEC)
     tay
     lda.w <tile_index>,y
     sta $05
-    ldy $13E0|!addr
+    ldy !player_pose_num
     lda.w <tilemap>,y
     sta $0A
     stz $06
