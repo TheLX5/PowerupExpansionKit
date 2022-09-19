@@ -27,13 +27,14 @@
 ;#   - "shrink": Plays the powerup shrinking animation
 ;#   - "palette": Cycles through some palettes
 ;#   - "smoke": Leaves a smoke particle while making the player invisible
-!cape_powerdown_action = "smoke"
+;# Note that if this powerup uses custom code and not macros this setting will be ignored.
+!cape_powerdown_action = "shrink"
 
 ;# Which powerup number the player will have after being hurt
 !cape_powerdown_power_num = $00
 
 ;# SFX number & port when getting hurt while using this powerup
-!cape_powerdown_sfx_num = $0C
+!cape_powerdown_sfx_num = $04
 !cape_powerdown_sfx_port = $1DF9
 
 

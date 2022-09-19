@@ -28,13 +28,13 @@
 ;#   - "palette": Cycles through some palettes
 ;#   - "smoke": Leaves a smoke particle while making the player invisible
 ;# Note that if this powerup uses custom code and not macros this setting will be ignored.
-!fire_powerdown_action = "palette"
+!fire_powerdown_action = "shrink"
 
 ;# Which powerup number the player will have after being hurt
 !fire_powerdown_power_num = $00
 
 ;# SFX number & port when getting hurt while using this powerup
-!fire_powerdown_sfx_num = $0C
+!fire_powerdown_sfx_num = $04
 !fire_powerdown_sfx_port = $1DF9
 
 
