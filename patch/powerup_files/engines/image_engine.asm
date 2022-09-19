@@ -189,6 +189,27 @@ player_poses_handler:
     jsr ($0000|!dp,x)
 .return_image
 
+    lda !player_graphics_bypass
+    bne .skip_setting_index
+.regular_gfx_rules
+    rep #$20
+    lda !player_powerup
+    and #$00FF
+    ldx !player_num
+    beq .p1
+.p2 
+    clc 
+    adc.w #!max_powerup_num
+.p1 
+    rep #$10
+    tax 
+    sep #$20
+    lda.l .index,x
+    sta !player_graphics_index
+    lda.l .extra_index,x
+    sta !player_graphics_extra_index
+.skip_setting_index
+
     lda !player_graphics_index
     rep #$30
     and #$00FF
@@ -200,6 +221,19 @@ player_poses_handler:
     ldx #$00
     jsr ($0000|!dp,x)
 .return_tilemap
+
+    lda $61
+    beq +
+    dec $61
+    lda !player_graphics_index
+    lsr #4
+    sta $0EF9|!addr
+    lda !player_graphics_index
+    and #$0F
+    sta $0EFA|!addr
+    lda $19
+    sta $0EFC|!addr
++   
 
     lda !player_graphics_index
     rep #$20
@@ -219,6 +253,55 @@ player_poses_handler:
 .end
     plb
     jml $00E3C0|!bank
+
+
+
+.index
+    !i #= 0
+    while !i < !max_powerup_num
+        %internal_number_to_string(!i)
+        if defined("powerup_!{_num}_p1_gfx_index")
+            db !{powerup_!{_num}_p1_gfx_index}
+        else
+            db $00
+        endif
+        !i #= !i+1
+    endif
+    !i #= 0
+    while !i < !max_powerup_num
+        %internal_number_to_string(!i)
+        if defined("powerup_!{_num}_p2_gfx_index")
+            db !{powerup_!{_num}_p2_gfx_index}
+        else
+            db $00
+        endif
+        !i #= !i+1
+    endif
+
+.extra_index
+    !i #= 0
+    while !i < !max_powerup_num
+        %internal_number_to_string(!i)
+        if defined("powerup_!{_num}_p1_extra_gfx_index")
+            db !{powerup_!{_num}_p1_extra_gfx_index}
+        else
+            db $00
+        endif
+        !i #= !i+1
+    endif
+    !i #= 0
+    while !i < !max_powerup_num
+        %internal_number_to_string(!i)
+        if defined("powerup_!{_num}_p2_extra_gfx_index")
+            db !{powerup_!{_num}_p2_extra_gfx_index}
+        else
+            db $00
+        endif
+        !i #= !i+1
+    endif
+
+
+
 
 player_x_disp_handler:
     pha

@@ -14,26 +14,6 @@ pullpc
 reset bytes
 
 player_exgfx:
-    lda !player_graphics_bypass
-    bne .compute_pointer
-.regular_gfx_rules
-    rep #$20
-    lda !player_powerup
-    and #$00FF
-    ldx !player_num
-    beq .p1
-.p2 
-    clc 
-    adc.w #!max_powerup_num
-.p1 
-    rep #$10
-    tax 
-    sep #$20
-    lda.l .index,x
-    sta !player_graphics_index
-    lda.l .extra_index,x
-    sta !player_graphics_extra_index
-
 .compute_pointer
     rep #$30
     lda !player_graphics_index
@@ -92,52 +72,7 @@ player_exgfx:
     sta $0D84|!addr
 
     jml $00F635|!bank
-
-.index
-    !i #= 0
-    while !i < !max_powerup_num
-        %internal_number_to_string(!i)
-        if defined("powerup_!{_num}_p1_gfx_index")
-            db !{powerup_!{_num}_p1_gfx_index}
-        else
-            db $00
-        endif
-        !i #= !i+1
-    endif
-    !i #= 0
-    while !i < !max_powerup_num
-        %internal_number_to_string(!i)
-        if defined("powerup_!{_num}_p2_gfx_index")
-            db !{powerup_!{_num}_p2_gfx_index}
-        else
-            db $00
-        endif
-        !i #= !i+1
-    endif
-
-.extra_index
-    !i #= 0
-    while !i < !max_powerup_num
-        %internal_number_to_string(!i)
-        if defined("powerup_!{_num}_p1_extra_gfx_index")
-            db !{powerup_!{_num}_p1_extra_gfx_index}
-        else
-            db $00
-        endif
-        !i #= !i+1
-    endif
-    !i #= 0
-    while !i < !max_powerup_num
-        %internal_number_to_string(!i)
-        if defined("powerup_!{_num}_p2_extra_gfx_index")
-            db !{powerup_!{_num}_p2_extra_gfx_index}
-        else
-            db $00
-        endif
-        !i #= !i+1
-    endif
-
-
+    
 player_exgfx_pointers:
     !i #= 0
     while !i < !max_gfx_num
