@@ -27,6 +27,7 @@
 ;#   - "shrink": Plays the powerup shrinking animation
 ;#   - "palette": Cycles through some palettes
 ;#   - "smoke": Leaves a smoke particle while making the player invisible
+;# Note that if this powerup uses custom code and not macros this setting will be ignored.
 !big_powerdown_action = "shrink"
 
 ;# Which powerup number the player will have after being hurt
