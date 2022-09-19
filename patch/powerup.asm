@@ -73,8 +73,6 @@ if !_error_detected == 0
     %insert_file("engines/item_engine.asm")
     %insert_file("engines/item_box_engine.asm")
 
-    ;%insert_file("engines/cape_engine.asm")
-
 ;#########################################################################
 ;# End
 
