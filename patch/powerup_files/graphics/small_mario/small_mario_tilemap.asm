@@ -2,8 +2,10 @@
     ; setup tile size
     lda #$F8
     sta $04
+
     ldx !player_pose_num
     %tilemap_large(.tilemap, .displacement_index, .displacement_index_index)
+
     rts
 
 .tilemap
@@ -12,12 +14,12 @@
     db $10,$11,$12,$12,$14,$15,$16,$17	;3
     db $18,$19,$1A,$1B,$1C,$1D,$1E,$1F	;4
     db $20,$21,$22,$23,$24,$25,$26,$27	;5
-    db $28,$29,$80,$80,$80,$80,$80,$80	;6
+    db $28,$20,$80,$80,$80,$80,$80,$80	;6
     db $30,$31,$32,$33,$34,$35,$36,$37	;7
     db $38,$39,$3A,$3B,$3C	;8
 ;misc
     db $3D,$3E,$3F
-    db $80,$80,$2A,$2B,$2C,$2D,$2E
+    db $80,$80,$2A,$2A,$2C,$2D,$2E
 
 .displacement_index
     db $00,$08,$10,$18,$20,$28,$00,$00	;00-07
