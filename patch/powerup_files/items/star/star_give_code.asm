@@ -9,13 +9,17 @@
 
 .collected
     jsl $01C580|!addr
-    lda #$0A
-    sta $1DF9|!addr
-    lda #$04
-    ldy !item_falling,x
-    bne .from_item_box
-    jsl give_points
-.from_item_box
+    if !star_collected_sfx_num != $00
+        lda.b #!star_collected_sfx_num
+        sta.w !star_collected_sfx_port|!addr
+    endif
+    if !star_can_give_points == !yes
+        lda.b #!star_collected_points
+        ldy !item_falling,x
+        bne ..from_item_box
+        jsl give_points
+    ..from_item_box
+    endif 
     rts
 
 ;################################################
@@ -29,4 +33,5 @@
 ;# Routine to instantly give a powerup without any animation/effect
 
 .quick
+    jsl $01C580|!addr
     rtl 

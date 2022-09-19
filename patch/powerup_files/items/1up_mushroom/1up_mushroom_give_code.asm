@@ -8,10 +8,16 @@
 ;# Runs whenever the player touches the powerup item
 
 .collected
-    lda #$08
-    clc 
-    adc !1594,x
-    jsl give_points
+    if !1up_mushroom_collected_points != $00
+        lda #!1up_mushroom_collected_sfx_num
+        sta.w !1up_mushroom_collected_sfx_port|!addr
+    endif
+    if !1up_mushroom_can_give_points == !yes
+        lda.b #!1up_mushroom_collected_points
+        clc 
+        adc !1594,x
+        jsl give_points
+    endif
     rts
 
 ;################################################

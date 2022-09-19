@@ -119,6 +119,23 @@ include
 !drop_item_if_big = !yes
 
 
+;################################################
+;# Collected items global configuration
+;# These settings are only used for the default configuration
+;# Most items only use these when they're collected and the player already has
+;# the powerup associated to said item.
+
+;# SFX number that will play when the player collects an item
+!default_collected_sfx_num = $0A
+!default_collected_sfx_port = $1DF9
+
+;# Enables items to give points
+!default_can_give_points = !yes
+
+;# Points that will be given when collecting this item
+;# Valid values: https://smwc.me/m/smw/rom/02ACE5
+!default_collected_points = $04
+
 
 ;##################################################################################################
 ;# Macros & global defines.
@@ -361,8 +378,12 @@ endif
 !player_stomp_count             = $18D2|!addr
 !player_frozen                  = $13FB|!addr
 
+;################################################
+;# Level RAM addresses
+
 !level_water_flag               = $85
 !level_slippery_flag            = $86
+!level_on_off                   = $14AF|!addr
 
 ;################################################
 ;# Item sprite tables & RAM addresses

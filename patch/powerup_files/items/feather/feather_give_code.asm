@@ -8,21 +8,27 @@
 ;# Runs whenever the player touches the powerup item
 
 .collected
-    lda #!cape_powerup_num
+    lda.b #!feather_powerup_num
     cmp !player_powerup
-    bne .not_same
+    bne ..not_same
     jmp do_nothing
-.not_same
+..not_same
     sta !player_powerup
-    lda #$0D
-    sta $1DF9|!addr 
-    lda #$04
-    ldy !item_falling,x
-    bne .from_item_box
-    jsl give_points
-.from_item_box
+    if !feather_collected_sfx_num != $00
+        lda.b #!feather_collected_sfx_num 
+        sta.w !feather_collected_sfx_port|!addr
+    endif
+    if !feather_can_give_points == !yes
+        lda #$04
+        ldy !item_falling,x
+        bne ..from_item_box
+        jsl give_points
+    ..from_item_box
+    endif 
     jsl $01C5AE|!bank
-    inc $9D
+    if !feather_freeze_screen == !yes
+        inc $9D
+    endif 
     rts
 
 ;################################################
@@ -30,15 +36,17 @@
 ;# Runs when the player touches a powerup item
 
 .item_box
-    lda.w .item_id,y
-    beq .nope
+    lda.w ..item_id,y
+    beq ..nope
     sta !player_item_box
-    lda.b #!powerup_in_item_box_sfx
-    sta !powerup_in_item_box_port|!addr
-.nope
+    if !feather_item_box_sfx_num != $00
+        lda.b #!feather_item_box_sfx_num
+        sta.w !feather_item_box_sfx_port|!addr
+    endif
+..nope
     rts 
 
-.item_id
+..item_id
     !i #= 0
     while !i < !max_powerup_num
         %internal_number_to_string(!i)
@@ -54,6 +62,6 @@
 ;# Routine to instantly give a powerup without any animation/effect
 
 .quick
-    lda #!cape_powerup_num
-    sta $19
+    lda.b #!feather_powerup_num
+    sta !player_powerup
     rtl
