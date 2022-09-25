@@ -37,9 +37,8 @@ crouching_flag:
 ;# Handles disabling sliding
 
 pushpc
-    org $00EEF8|!bank
+    org $00EEF2|!bank
         jsl slide_flag
-        nop #2
 pullpc
 
 slide_flag:
@@ -51,8 +50,8 @@ slide_flag:
 	beq .cant_slide
     lda #$00
     sta !player_disable_slide
-	lda !player_holding
-	ora !player_sliding
+    lda $15
+    and #$04
 .cant_slide
 	rtl
 
@@ -92,7 +91,6 @@ spinjump_flag:
 	lda.l .global_flags,x
 	eor !player_disable_spinjump
 	beq +
-    lda #$00
 	sta !player_spinjump
 	lda #$04
 	sta $1DFC|!addr
