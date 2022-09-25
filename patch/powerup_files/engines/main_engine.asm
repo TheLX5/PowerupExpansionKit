@@ -15,11 +15,6 @@ main_engine:
     lda #$00
     sta !player_hitbox_flag                 ; Custom hitbox/hurtbox with sprites flag
     sta !player_collision_flag              ; Custom collision box with layer 1/2
-    sta !player_disable_crouch              ; Flag for disabling crouching
-    sta !player_disable_slide               ; Flag for disabling sliding
-    sta !player_disable_spinjump            ; Flag for disabling spinjumping
-    sta !player_disable_extended_hurt       ; Flag for disabling being hurt by fireballs
-    sta !player_disable_ride_yoshi          ; Flag for disabling being able to ride yoshi
 
 .handle
     lda $19
