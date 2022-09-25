@@ -18,6 +18,9 @@
 ;# Enable custom interaction with sprites.
 !fire_custom_interaction = !no
 
+;# Enable riding Yoshi with this powerup.
+!fire_can_ride_yoshi = !yes
+
 
 ;################################################
 ;# Powerdown
@@ -70,6 +73,17 @@
 
 ;# Player 2's palette index
 !fire_p2_palette_index = $07
+
+
+;################################################
+;# Graphical options
+
+;# Determines the Y displacement where the water splash will appear in relation to the player
+;# This is affected by collision data
+!fire_water_y_disp = $0010
+
+;# Same as above, but when the player is riding Yoshi
+!fire_water_y_disp_on_yoshi = $0004
 
 
 ;################################################

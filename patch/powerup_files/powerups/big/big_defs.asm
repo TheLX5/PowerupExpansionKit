@@ -18,6 +18,9 @@
 ;# Enable custom interaction with sprites.
 !big_custom_interaction = !no
 
+;# Enable riding Yoshi with this powerup.
+!big_can_ride_yoshi = !yes
+
 
 ;################################################
 ;# Powerdown
@@ -69,6 +72,17 @@
 
 ;# Player 2's palette index
 !big_p2_palette_index = $04
+
+
+;################################################
+;# Graphical options
+
+;# Determines the Y displacement where the water splash will appear in relation to the player
+;# This is affected by collision data
+!big_water_y_disp = $0010
+
+;# Same as above, but when the player is riding Yoshi
+!big_water_y_disp_on_yoshi = $0004
 
 
 ;################################################

@@ -18,6 +18,9 @@
 ;# Enable custom interaction with sprites.
 !cape_custom_interaction = !no
 
+;# Enable riding Yoshi with this powerup.
+!cape_can_ride_yoshi = !yes
+
 
 ;################################################
 ;# Powerdown
@@ -82,6 +85,17 @@
 
 ;# Port for the sound effect above.
 !cape_spin_sfx_port = $1DFC
+
+
+;################################################
+;# Graphical options
+
+;# Determines the Y displacement where the water splash will appear in relation to the player
+;# This is affected by collision data
+!cape_water_y_disp = $0010
+
+;# Same as above, but when the player is riding Yoshi
+!cape_water_y_disp_on_yoshi = $0004
 
 
 ;################################################
