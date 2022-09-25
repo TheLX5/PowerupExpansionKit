@@ -212,7 +212,7 @@ if !ENABLE_POSE_DEBUG == !yes
         lda !debug_ram
         sta !player_pose_num
     ++
-    endif
+endif
 
     lda !player_graphics_bypass
     bne .skip_setting_index
@@ -246,19 +246,6 @@ if !ENABLE_POSE_DEBUG == !yes
     ldx #$00
     jsr ($0000|!dp,x)
 .return_tilemap
-
-    lda $61
-    beq +
-    dec $61
-    lda !player_graphics_index
-    lsr #4
-    sta $0EF9|!addr
-    lda !player_graphics_index
-    and #$0F
-    sta $0EFA|!addr
-    lda $19
-    sta $0EFC|!addr
-+   
 
     lda !player_graphics_index
     rep #$20
