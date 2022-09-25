@@ -5,9 +5,12 @@
 
 ;################################################
 ;# General behavior
-                        
+
 ;# Enable spinjumping with this powerup.
 !small_can_spinjump = !yes
+
+;# Enable climbing with this powerup.
+!small_can_climb = !yes
 
 ;# Enable crouching with this powerup.
 !small_can_crouch = !yes
@@ -15,11 +18,15 @@
 ;# Enable sliding with this powerup.
 !small_can_slide = !yes
 
-;# Enable custom interaction with sprites.
-!small_custom_interaction = !no
+;# Enable carrying items with this powerup.
+!small_can_carry_items = !yes
 
 ;# Enable riding Yoshi with this powerup.
 !small_can_ride_yoshi = !yes
+
+;# Enable custom interaction with sprites.
+!small_custom_interaction = !no
+
 
 
 ;################################################

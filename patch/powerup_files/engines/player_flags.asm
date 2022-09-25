@@ -32,6 +32,75 @@ crouching_flag:
         !i #= !i+1
     endif
 
+;################################################
+;# Handles disabling climbing
+
+pushpc
+    org $00CD5E
+        jsl climb_flag
+pullpc
+
+climb_flag:
+	phx 
+	ldx !player_powerup
+	lda.l .global_flags,x 
+	plx
+	eor !player_toggle_climbing
+	beq .cant_climb
+    lda #$00
+    sta !player_toggle_climbing
+    lda $15
+    and #$0C
+.cant_climb
+	rtl
+
+.global_flags
+    !i #= 0
+    while !i < !max_powerup_num
+        %internal_number_to_string(!i)
+        if not(stringsequal("!{powerup_!{_num}_path}", "0"))
+            db !{powerup_!{_num}_can_climb}
+        else
+            db $01
+        endif
+        !i #= !i+1
+    endif
+
+
+;################################################
+;# Handles disabling carrying items
+
+pushpc
+    org $01AA58
+        jsl carry_flag
+pullpc
+
+carry_flag:
+	phx 
+	ldx !player_powerup
+	lda.l .global_flags,x 
+	plx
+	eor !player_toggle_carry
+	beq .cant_slide
+    lda #$00
+    sta !player_toggle_carry
+    lda $15
+    and #$40
+.cant_slide
+	rtl
+
+.global_flags
+    !i #= 0
+    while !i < !max_powerup_num
+        %internal_number_to_string(!i)
+        if not(stringsequal("!{powerup_!{_num}_path}", "0"))
+            db !{powerup_!{_num}_can_carry_items}
+        else
+            db $01
+        endif
+        !i #= !i+1
+    endif
+
 
 ;################################################
 ;# Handles disabling sliding

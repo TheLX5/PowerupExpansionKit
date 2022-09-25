@@ -22,5 +22,5 @@
 	lda #!cape_spin_sfx
 	sta !cape_spin_sfx_port|!addr
 	
-.return		
+.return
 	rts

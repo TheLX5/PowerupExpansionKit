@@ -9,17 +9,24 @@
 ;# Enable spinjumping with this powerup.
 !fire_can_spinjump = !yes
 
+;# Enable climbing with this powerup.
+!fire_can_climb = !yes
+
 ;# Enable crouching with this powerup.
 !fire_can_crouch = !yes
 
 ;# Enable sliding with this powerup.
 !fire_can_slide = !yes
-                        
-;# Enable custom interaction with sprites.
-!fire_custom_interaction = !no
+
+;# Enable carrying items with this powerup.
+!fire_can_carry_items = !yes
 
 ;# Enable riding Yoshi with this powerup.
 !fire_can_ride_yoshi = !yes
+
+;# Enable custom interaction with sprites.
+!fire_custom_interaction = !no
+
 
 
 ;################################################
