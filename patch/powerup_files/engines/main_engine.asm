@@ -18,8 +18,6 @@ main_engine:
     sta !player_disable_crouch              ; Flag for disabling crouching
     sta !player_disable_slide               ; Flag for disabling sliding
     sta !player_disable_spinjump            ; Flag for disabling spinjumping
-    sta !player_disable_controller_15       ; Flag for disabling some controller buttons
-    sta !player_disable_controller_17       ; Flag for disabling some controller buttons
     sta !player_disable_extended_hurt       ; Flag for disabling being hurt by fireballs
     sta !player_disable_ride_yoshi          ; Flag for disabling being able to ride yoshi
 
