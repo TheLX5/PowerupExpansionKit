@@ -440,20 +440,22 @@ endif
 !player_collision_data_x        = !player_collision_pointer_y+3
 !player_collision_data_y        = !player_collision_data_x+128
 
-!player_disable_crouch          = !player_collision_data_y+128
-!player_disable_slide           = !player_disable_crouch+1
-!player_disable_spinjump        = !player_disable_slide+1
-!player_disable_climbing        = !player_disable_spinjump+1
-!player_disable_ride_yoshi      = !player_disable_climbing+1
-!player_disable_controller_15   = !player_disable_ride_yoshi+1
-!player_disable_controller_17   = !player_disable_controller_15+1
-!player_disable_extended_hurt   = !player_disable_controller_17+1
-!player_disable_itembox         = !player_disable_extended_hurt+1
+!player_toggle_crouch           = !player_collision_data_y+128
+!player_toggle_slide            = !player_toggle_crouch+1
+!player_toggle_spinjump         = !player_toggle_slide+1
+!player_toggle_climbing         = !player_toggle_spinjump+1
+!player_toggle_ride_yoshi       = !player_toggle_climbing+1
+!player_toggle_extended_hurt    = !player_toggle_ride_yoshi+1
+
+!player_disable_itembox         = !player_toggle_extended_hurt+1
 
 !player_backup_blocked_status   = !player_disable_itembox+1
 !player_backup_slippery_status  = !player_backup_blocked_status+1
 
-!debug_ram                      = !player_backup_slippery_status+1
+!mask_controller_15             = !player_backup_slippery_status+1
+!mask_controller_17             = !mask_controller_15+1
+
+!debug_ram                      = !mask_controller_17+1
 
 !extra_sprite_ram               = !SprSize*4
 !extra_extended_ram             = !Extendedsize*5

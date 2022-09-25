@@ -11,10 +11,10 @@ crouching_flag:
 	ldx !player_powerup
 	lda.l .global_flags,x 
 	plx
-	eor !player_disable_crouch
+	eor !player_toggle_crouch
 	beq .cant_crouch
     lda #$00
-    sta !player_disable_crouch
+    sta !player_toggle_crouch
 	lda $15
 	and #$04
 .cant_crouch
@@ -46,10 +46,10 @@ slide_flag:
 	ldx !player_powerup
 	lda.l .global_flags,x 
 	plx
-	eor !player_disable_slide
+	eor !player_toggle_slide
 	beq .cant_slide
     lda #$00
-    sta !player_disable_slide
+    sta !player_toggle_slide
     lda $15
     and #$04
 .cant_slide
@@ -89,7 +89,7 @@ spinjump_flag:
 	phx	
 	ldx !player_powerup
 	lda.l .global_flags,x
-	eor !player_disable_spinjump
+	eor !player_toggle_spinjump
 	beq +
 	sta !player_spinjump
 	lda #$04
@@ -97,7 +97,7 @@ spinjump_flag:
 	bra ++
 +	
 	lda #$00
-	sta !player_disable_spinjump
+	sta !player_toggle_spinjump
     rep #$20
     lda $00D65E+$02+$01     ; sfx port for jumping
     sta $00
@@ -134,10 +134,10 @@ ride_yoshi_flag:
 	ldx !player_powerup
 	lda.l .global_flags,x 
 	plx 
-    eor !player_disable_ride_yoshi
+    eor !player_toggle_ride_yoshi
     beq .force_end_code
     lda #$00
-    sta !player_disable_ride_yoshi
+    sta !player_toggle_ride_yoshi
     lda !player_in_air
     beq .force_end_code
     jml $01ED3C|!bank
