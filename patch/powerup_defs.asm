@@ -170,8 +170,14 @@ macro setup_general_defines(num)
     !powerup_<num>_can_spinjump := !{!{_name}_can_spinjump}
     !powerup_<num>_can_slide := !{!{_name}_can_slide}
     !powerup_<num>_can_crouch := !{!{_name}_can_crouch}
+    !powerup_<num>_can_ride_yoshi := !{!{_name}_can_ride_yoshi}
 
     !powerup_<num>_item_id := !{!{_name}_item_id}
+
+    !powerup_<num>_water_y_disp := !{!{_name}_water_y_disp}
+    !powerup_<num>_water_y_disp_on_yoshi := !{!{_name}_water_y_disp_on_yoshi}
+
+    !powerup_<num>_custom_interaction := !{!{_name}_custom_interaction}
 endmacro
 
 macro setup_general_gfx_defines(num)
@@ -344,6 +350,11 @@ endif
 !player_in_slope                = $13EE|!addr
 !player_spinjump                = $140D|!addr
 !player_sliding                 = $13ED|!addr
+!player_holding                 = $148F|!addr
+!player_carrying                = $1470|!addr
+!player_disable_collision       = $185C|!addr
+!player_stomp_count             = $18D2|!addr
+!player_frozen                  = $13FB|!addr
 
 !player_item_box_2              = $0DBC|!addr
 !player_item_box                = $0DC2|!addr
@@ -358,6 +369,11 @@ endif
 !player_walk_pose               = $13DB|!addr
 !player_cape_pose_num           = $13DF|!addr
 !player_extra_tile_num          = !player_cape_pose_num
+!player_previous_pose_num       = $18C5|!addr
+!player_extended_anin_index     = $18C6|!addr
+!player_extended_anim_pose      = $18C7|!addr
+!player_extended_anim_frame     = $18C8|!addr
+!player_extended_anim_timer     = $18C9|!addr
 
 !player_invulnerability_timer   = $1497|!addr
 !player_flash_timer             = !player_invulnerability_timer
@@ -371,12 +387,6 @@ endif
 !cape_interaction_x_pos         = $13E9|!addr
 !cape_interaction_y_pos         = $13EB|!addr
 !cape_spin_timer                = $14A6|!addr
-
-!player_holding                 = $148F|!addr
-!player_carrying                = $1470|!addr
-!player_disable_collision       = $185C|!addr
-!player_stomp_count             = $18D2|!addr
-!player_frozen                  = $13FB|!addr
 
 ;################################################
 ;# Level RAM addresses
@@ -433,7 +443,8 @@ endif
 !player_disable_crouch          = !player_collision_data_y+128
 !player_disable_slide           = !player_disable_crouch+1
 !player_disable_spinjump        = !player_disable_slide+1
-!player_disable_ride_yoshi      = !player_disable_spinjump+1
+!player_disable_climbing        = !player_disable_spinjump+1
+!player_disable_ride_yoshi      = !player_disable_climbing+1
 !player_disable_controller_15   = !player_disable_ride_yoshi+1
 !player_disable_controller_17   = !player_disable_controller_15+1
 !player_disable_extended_hurt   = !player_disable_controller_17+1
