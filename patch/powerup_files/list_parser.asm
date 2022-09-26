@@ -443,60 +443,83 @@ while readfile1("!gfx_list_path", !_position, $FF) != $FF
         !{gfx_!{_gfx_num}_path} := "./graphics/!_gfx_name"
         !{!{_gfx_name}_gfx_num} := !_gfx_num
 
-        if !_position < $FFFFFE
-            print "       GFX !{!{_gfx_name}_gfx_num}: !{gfx_!{_gfx_num}_internal_name}"
-            ;print "         Path: !{gfx_!{_gfx_num}_path}"
-        endif
-
     ;# Test files
     
         !{gfx_!{_gfx_num}_gfx_exist} = 0
         !{gfx_!{_gfx_num}_extra_gfx_exist} = 0
-        !{gfx_!{_gfx_num}_x_disp_exist} = 0
-        !{gfx_!{_gfx_num}_y_disp_exist} = 0
         !{gfx_!{_gfx_num}_tilemap_exist} = 0
+        !{gfx_!{_gfx_num}_animations_exist} = 0
         !{gfx_!{_gfx_num}_palette_exist} = 0
+        !_included_files = ""
         !_path := "graphics/!{_gfx_name}"
         if canreadfile1("!_path/!_gfx_name.bin", 0)
-            ; regular gfx exist, expecting disp, tilemap and palettes for it
+            ; regular gfx exist, expecting disp, tilemap and palettes for it, extra gfx and animation files are optional
             !{gfx_!{_gfx_num}_gfx_exist} = 1
+            !_included_files += "GFX,"
+            if canreadfile1("!_path/!{_gfx_name}_extra.bin", 0)
+                !{gfx_!{_gfx_num}_extra_gfx_exist} = 1
+                !_included_files += ", extra GFX"
+            endif
             if canreadfile1("!_path/!{_gfx_name}_tilemap.asm", 0)
                 !{gfx_!{_gfx_num}_tilemap_exist} = 1
+                !_included_files += ", tilemap"
             else
                 %setup_error_msg("GFX !{_gfx_num} (!{_gfx_name}) is missing a file: !{_gfx_name}_tilemap.asm")
             endif
+            if canreadfile1("!_path/!{_gfx_name}_animations.asm", 0)
+                !{gfx_!{_gfx_num}_animations_exist} = 1
+                !_included_files += ", smooth animations"
+            endif
             if canreadfile1("!_path/!{_gfx_name}.mw3", 0)
                 !{gfx_!{_gfx_num}_palette_exist} = 1
+                !_included_files += ", palette"
             else
                 %setup_error_msg("GFX !{_gfx_num} (!{_gfx_name}) is missing a palette file: !{_gfx_name}.mw3")
-            endif
-            if canreadfile1("!_path/!{_gfx_name}_extra.bin", 0)
-                !{gfx_!{_gfx_num}_extra_gfx_exist} = 1
             endif
         else 
             ; regular gfx doesn't exist, only extra gfx should exist and throw warning for unneeded files
             if canreadfile1("!_path/!{_gfx_name}_extra.bin", 0) != 0
                 !{gfx_!{_gfx_num}_extra_gfx_exist} = 1
+                !_included_files += "Extra GFX"
                 if canreadfile1("!_path/!{_gfx_name}_tilemap.asm", 0)
                     !{gfx_!{_gfx_num}_tilemap_exist} = 1
+                    !_included_files += ", tilemap"
                     %setup_warn_msg("GFX !{_gfx_num} (!{_gfx_name}) may have unnecesary files: !{_gfx_name}_tilemap.asm")
+                endif
+                if canreadfile1("!_path/!{_gfx_name}_animation.asm", 0)
+                    !{gfx_!{_gfx_num}_animations_exist} = 1
+                    !_included_files += ", smooth animations"
+                    %setup_warn_msg("GFX !{_gfx_num} (!{_gfx_name}) may have unnecesary files: !{_gfx_name}_animations.asm")
                 endif
                 if canreadfile1("!_path/!{_gfx_name}.mw3", 0)
                     !{gfx_!{_gfx_num}_palette_exist} = 1
+                    !_included_files += ", palette"
                     %setup_warn_msg("GFX !{_gfx_num} (!{_gfx_name}) may have unnecesary files: !{_gfx_name}.mw3")
                 endif
             else
                 ; extra gfx doesn't exist, check for palette files
                 if canreadfile1("!_path/!{_gfx_name}.mw3", 0) != 0
                     !{gfx_!{_gfx_num}_palette_exist} = 1
+                    !_included_files += "Palette"
                     if canreadfile1("!_path/!{_gfx_name}_tilemap.asm", 0)
                         !{gfx_!{_gfx_num}_tilemap_exist} = 1
+                        !_included_files += ", tilemap"
                         %setup_warn_msg("GFX !{_gfx_num} (!{_gfx_name}) may have unnecesary files: !{_gfx_name}_tilemap.asm")
+                    endif
+                    if canreadfile1("!_path/!{_gfx_name}_animation.asm", 0)
+                        !{gfx_!{_gfx_num}_animations_exist} = 1
+                        !_included_files += ", smooth animations"
+                        %setup_warn_msg("GFX !{_gfx_num} (!{_gfx_name}) may have unnecesary files: !{_gfx_name}_animations.asm")
                     endif
                 else
                     %setup_error_msg("GFX !{_gfx_num} (!{_gfx_name}) is missing a file to be a valid entry: !{_gfx_name}_extra.bin or !{_gfx_name}.mw3")
                 endif
             endif
+        endif
+
+        if !_position < $FFFFFE
+            print "       GFX !{!{_gfx_name}_gfx_num}: !{gfx_!{_gfx_num}_internal_name} (!_included_files)"
+            ;print "         Path: !{gfx_!{_gfx_num}_path}"
         endif
 
         if !_gfx_num >= !max_gfx_num

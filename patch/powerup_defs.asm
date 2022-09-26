@@ -10,9 +10,6 @@ include
 !yes = 1
 !no = 0
 
-; Special option for the defines related to sprite remapping
-; It basically undoes the hex edits.
-!recover = 2
 
 ;################################################
 ;# Readme confirmation
@@ -170,6 +167,8 @@ macro setup_general_defines(num)
     !powerup_<num>_can_spinjump := !{!{_name}_can_spinjump}
     !powerup_<num>_can_slide := !{!{_name}_can_slide}
     !powerup_<num>_can_crouch := !{!{_name}_can_crouch}
+    !powerup_<num>_can_climb := !{!{_name}_can_climb}
+    !powerup_<num>_can_carry_items := !{!{_name}_can_carry_items}
     !powerup_<num>_can_ride_yoshi := !{!{_name}_can_ride_yoshi}
 
     !powerup_<num>_item_id := !{!{_name}_item_id}
@@ -209,41 +208,12 @@ macro insert_file(file_path)
         endif
         incsrc "!powerup_files_path/<file_path>"
         if !ENABLE_VERBOSE
-            print "Insert size: ", bytes," bytes."
+            print "Modified bytes: ", bytes," bytes."
             print ""
         endif
     endif
 endmacro
 
-;################################################
-;# Tilemap helpers
-
-macro tilemap_original(tilemap_top, tilemap_bottom, tilemap_extra, tile_index, data_00DCEC)
-    lda.w <data_00DCEC>,x
-    ora $76
-    tay
-    lda.w <tile_index>,y
-    sta $05
-    ldy !player_pose_num
-    lda.w <tilemap_extra>,y
-    sta $06
-    lda.w <tilemap_top>,y
-    sta $0A
-    lda.w <tilemap_bottom>,y
-    sta $0B
-endmacro
-
-macro tilemap_large(tilemap, tile_index, data_00DCEC)
-    lda.w <data_00DCEC>,x
-    ora $76
-    tay
-    lda.w <tile_index>,y
-    sta $05
-    ldy !player_pose_num
-    lda.w <tilemap>,y
-    sta $0A
-    stz $06
-endmacro
 
 ;################################################
 ;# Build SA-1 defines
@@ -263,6 +233,7 @@ macro define_base2_address_powerups(name, addr)
 		!<name> ?= <addr>|!Base2
 	endif
 endmacro
+
 
 ;############################################################
 ;# DSS inclusion
@@ -370,9 +341,9 @@ endif
 !player_cape_pose_num           = $13DF|!addr
 !player_extra_tile_num          = !player_cape_pose_num
 !player_previous_pose_num       = $18C5|!addr
-!player_extended_anin_index     = $18C6|!addr
-!player_extended_anim_pose      = $18C7|!addr
-!player_extended_anim_frame     = $18C8|!addr
+!player_extended_anim_index     = $18C6|!addr
+!player_extended_anim_num       = $18C7|!addr
+!player_extended_anim_pose      = $18C8|!addr
 !player_extended_anim_timer     = $18C9|!addr
 
 !player_invulnerability_timer   = $1497|!addr
@@ -444,7 +415,8 @@ endif
 !player_toggle_slide            = !player_toggle_crouch+1
 !player_toggle_spinjump         = !player_toggle_slide+1
 !player_toggle_climbing         = !player_toggle_spinjump+1
-!player_toggle_ride_yoshi       = !player_toggle_climbing+1
+!player_toggle_carry            = !player_toggle_climbing+1
+!player_toggle_ride_yoshi       = !player_toggle_carry+1
 !player_toggle_extended_hurt    = !player_toggle_ride_yoshi+1
 
 !player_disable_itembox         = !player_toggle_extended_hurt+1

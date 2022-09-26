@@ -1,20 +1,566 @@
 includefrom "powerup.asm"
 
+reset bytes
+
+;################################################
+;# Hijacks
+
 pushpc
     org $00E36D|!bank
-        autoclean jml player_poses_handler
+        jml player_poses_handler
     warnpc $00E3C0|!bank
 
+    org $00E3E4|!bank
+        BRA +
+    org $00E3EC|!bank
+    +
+pullpc
+
+player_poses_handler:
+    lda !player_flash_timer
+    beq .not_flashing
+    lsr #3
+    tax 
+    lda.l $00E292|!bank,x
+    and !player_flash_timer
+    ora !player_frozen
+    ora $9D
+    bne .not_flashing
+    plb 
+    rtl 
+
+.not_flashing
+    phb
+    phk
+    plb
+
+    lda #$00
+    sta !player_extra_tile_settings         ; Extra graphics settings
+    sta !player_extra_tile_offset_x         ; Extra graphics relative X position
+    sta !player_extra_tile_offset_x+1
+    sta !player_extra_tile_offset_y         ; Extra graphics relative Y position
+    sta !player_extra_tile_offset_y+1
+    sta !player_extra_tile_frame             ; Extra graphics tile
+
+.run_per_powerup_image_logic
+    lda !player_powerup
+    rep #$30
+    and #$00FF
+    asl 
+    tax 
+    lda.w .powerup_image_pointers,x
+    sta $00
+    sep #$30
+    ldx #$00
+    jsr ($0000|!dp,x)
+.return_image
+
+;# Pose viewer
+
+.debug_pose_viewer
+if !ENABLE_POSE_DEBUG == !yes
+        lda $71
+        bne ++
+        lda $16
+        and #$04
+        beq +
+        lda !debug_ram
+        dec 
+        bmi +
+        sta !debug_ram
+    +   
+        lda $16
+        and #$08
+        beq +
+        lda !debug_ram
+        inc 
+        cmp #$80
+        bcs +
+        sta !debug_ram
+    +   
+        lda !debug_ram
+        sta !player_pose_num
+    ++
+endif
+
+;# Setup player ExGFX
+
+.setup_player_exgfx
+    lda !player_graphics_bypass
+    bne ..skip_setting_index
+..regular_gfx_rules
+    rep #$20
+    lda !player_powerup
+    and #$00FF
+    ldx !player_num
+    beq ..p1
+..p2 
+    clc 
+    adc.w #!max_powerup_num
+..p1 
+    rep #$10
+    tax 
+    sep #$20
+    lda.l .index,x
+    sta !player_graphics_index
+    lda.l .extra_index,x
+    sta !player_graphics_extra_index
+    sep #$10
+..skip_setting_index
+
+.check_smooth_animations
+    lda !player_graphics_index
+    tay 
+    lda.w smooth_anim_enable,y
+    beq ..not_enabled
+    jsr smooth_animations
+    bra ..end
+..not_enabled
+    lda !player_pose_num
+    sta !player_extended_anim_pose
+..end
+    lda !player_extended_anim_pose
+    and #$0F
+    sta $0EFA|!addr
+    lda !player_extended_anim_pose
+    lsr #4
+    sta $0EF9|!addr
+
+.run_tilemap_logic
+    lda !player_graphics_index
+    rep #$30
+    and #$00FF
+    asl 
+    tax 
+    lda.w .tilemap_logic_pointers,x
+    sta $00
+    sep #$30
+    ldx #$00
+    jsr ($0000|!dp,x)
+.return_tilemap
+
+.setup_player_displacements
+    lda !player_graphics_index
+    rep #$20
+    and #$00FF
+    asl 
+    tax 
+    lda.w player_x_disp_handler_pointers,x
+    sta $6B
+    lda.w player_y_disp_handler_pointers,x
+    sta $6E
+    ldx.b #bank(player_x_disp_handler_pointers)
+    stx $6D
+    ldx.b #bank(player_y_disp_handler_pointers)
+    stx $70
+    sep #$20
+
+.end
+    plb
+    jml $00E3C0|!bank
+
+.index
+    !i #= 0
+    while !i < !max_powerup_num
+        %internal_number_to_string(!i)
+        if defined("powerup_!{_num}_p1_gfx_index")
+            db !{powerup_!{_num}_p1_gfx_index}
+        else
+            db $00
+        endif
+        !i #= !i+1
+    endif
+    !i #= 0
+    while !i < !max_powerup_num
+        %internal_number_to_string(!i)
+        if defined("powerup_!{_num}_p2_gfx_index")
+            db !{powerup_!{_num}_p2_gfx_index}
+        else
+            db $00
+        endif
+        !i #= !i+1
+    endif
+
+.extra_index
+    !i #= 0
+    while !i < !max_powerup_num
+        %internal_number_to_string(!i)
+        if defined("powerup_!{_num}_p1_extra_gfx_index")
+            db !{powerup_!{_num}_p1_extra_gfx_index}
+        else
+            db $00
+        endif
+        !i #= !i+1
+    endif
+    !i #= 0
+    while !i < !max_powerup_num
+        %internal_number_to_string(!i)
+        if defined("powerup_!{_num}_p2_extra_gfx_index")
+            db !{powerup_!{_num}_p2_extra_gfx_index}
+        else
+            db $00
+        endif
+        !i #= !i+1
+    endif
+
+.powerup_image_pointers
+    !i #= 0
+    while !i < !max_powerup_num
+        %internal_number_to_string(!i)
+        if stringsequal("!{powerup_!{_num}_path}", "0")
+            dw player_poses_handler_return_image
+        else
+            dw powerup_!{_num}_image
+        endif
+        !i #= !i+1
+    endif
+
+.tilemap_logic_pointers
+    !i #= 0
+    while !i < !max_gfx_num
+        %internal_number_to_string(!i)
+        if stringsequal("!{gfx_!{_num}_path}", "0")
+            dw player_poses_handler_return_tilemap
+        else
+            if !{gfx_!{_num}_tilemap_exist} == 1
+                dw gfx_!{_num}_tilemap
+            else 
+                dw $FFFF
+            endif
+        endif
+        !i #= !i+1
+    endif
+
+.tilemap_data
+    !i #= 0
+    while !i < !max_gfx_num
+        %internal_number_to_string(!i)
+        if stringsequal("!{gfx_!{_num}_path}", "0")
+            dw $FFFF
+        else
+            if !{gfx_!{_num}_tilemap_exist} == 1
+                dw gfx_!{_num}_tilemap_tilemap
+            else 
+                dw $FFFF
+            endif
+        endif
+        !i #= !i+1
+    endif
+
+powerup_image_codes:
+    !i #= 0
+    while !i < !max_powerup_num
+        %internal_number_to_string(!i)
+        if not(stringsequal("!{powerup_!{_num}_path}", "0"))
+            powerup_!{_num}_image:
+                incsrc "../!{powerup_!{_num}_path}/!{powerup_!{_num}_internal_name}_image_code.asm"
+        endif
+        !i #= !i+1
+    endif
+
+tilemap_logic_codes:
+    !i #= 0
+    while !i < !max_gfx_num
+        %internal_number_to_string(!i)
+        if not(stringsequal("!{gfx_!{_num}_path}", "0"))
+            if !{gfx_!{_num}_tilemap_exist} == 1
+                gfx_!{_num}_tilemap:
+                    incsrc "../!{gfx_!{_num}_path}/!{gfx_!{_num}_internal_name}_tilemap.asm"
+            endif
+        endif
+        !i #= !i+1
+    endif
+
+;################################################
+;# 
+
+pushpc
     org $00E489|!bank
-        autoclean jsl player_x_disp_handler
+        jsl player_x_disp_handler
+pullpc 
 
+player_x_disp_handler:
+    pha
+    lda !player_graphics_disp_settings
+    lsr 
+    bcs .ram_table
+.rom_table
+    pla 
+    phy
+    txy 
+    adc [$6B],y
+    ply 
+    rtl
+.ram_table
+    pla 
+    clc 
+    adc !player_graphics_x_disp,x
+    rtl
+
+.pointers
+    !i #= 0
+    while !i < !max_gfx_num
+        %internal_number_to_string(!i)
+        if stringsequal("!{gfx_!{_num}_path}", "0")
+            dw $FFFF
+        else
+            if !{gfx_!{_num}_tilemap_exist} == 1
+                dw gfx_!{_num}_tilemap_x_disp
+            else 
+                dw $FFFF
+            endif
+        endif
+        !i #= !i+1
+    endif
+
+
+;################################################
+;# 
+
+pushpc
     org $00E471|!bank
-        autoclean jsl player_y_disp_handler
+        jsl player_y_disp_handler
+pullpc 
 
+player_y_disp_handler:
+    pha
+    lda !player_graphics_disp_settings
+    lsr 
+    bcs .ram_table
+.rom_table
+    pla 
+    phy
+    txy 
+    adc [$6E],y
+    ply 
+    rtl
+.ram_table
+    pla 
+    clc 
+    adc !player_graphics_y_disp,x
+    rtl
+
+
+.pointers
+    !i #= 0
+    while !i < !max_gfx_num
+        %internal_number_to_string(!i)
+        if stringsequal("!{gfx_!{_num}_path}", "0")
+            dw $FFFF
+        else
+            if !{gfx_!{_num}_tilemap_exist} == 1
+                dw gfx_!{_num}_tilemap_y_disp
+            else 
+                dw $FFFF
+            endif
+        endif
+        !i #= !i+1
+    endif
+
+    
+;################################################
+;# Edit amount of walking poses
+
+pushpc
     org $00CFEE|!bank
-        autoclean jsl player_walk_frames_handler
+        jsl player_walk_frames_handler
         nop
+pullpc 
 
+player_walk_frames_handler:
+    phx
+    lda !player_graphics_index
+    tax 
+    lda.l .walk_frames,x
+    plx
+    rtl
+
+.walk_frames
+    !i #= 0
+    while !i < !max_gfx_num
+        %internal_number_to_string(!i)
+        if not(stringsequal("!{gfx_!{_num}_path}", "0"))
+            if defined("gfx_!{_num}_walk_frames")
+                db !{gfx_!{_num}_walk_frames}-1
+            else
+                db $02
+            endif
+        endif
+        !i #= !i+1
+    endif
+
+;################################################
+;# 
+
+smooth_animations:
+    lda !player_pose_num
+    cmp !player_previous_pose_num
+    beq .not_new_animation
+    sta !player_previous_pose_num
+    tay 
+
+    lda !player_graphics_index
+    asl 
+    tax 
+    rep #$20
+    lda.w smooth_anim_index_ptrs,x
+    sta $00
+    lda.w smooth_anim_init_timer_ptrs,x
+    sta $02
+    lda.w smooth_anim_init_pose_ptrs,x
+    sta $04
+    sep #$20
+
+    lda ($00),y
+    sta !player_extended_anim_num
+    beq .abort
+    lda #$FF
+    sta !player_extended_anim_index
+    lda ($02),y
+    sta !player_extended_anim_timer
+    lda ($04),y
+    sta !player_extended_anim_pose
+
+.not_new_animation
+    lda !player_extended_anim_num
+    beq .return
+
+    lda !player_extended_anim_timer
+    beq .next_smooth_frame
+    dec 
+    sta !player_extended_anim_timer
+    rts 
+
+.abort
+    tya
+    sta !player_extended_anim_pose
+    rts 
+
+.next_smooth_frame
+    lda !player_extended_anim_index
+    inc 
+    sta !player_extended_anim_index
+
+    lda !player_extended_anim_index
+    asl 
+    pha
+    lda !player_extended_anim_num
+    dec 
+    asl 
+    tay 
+    lda !player_graphics_index
+    asl 
+    tax 
+    rep #$20
+    lda.w smooth_anim_pointers_ptrs,x
+    sta $00
+    lda ($00),y
+    sta $00
+    ply 
+    lda ($00),y
+    sep #$20
+    sta !player_extended_anim_pose
+    xba 
+    sta !player_extended_anim_timer
+    inc
+    bne .return
+    stz !player_extended_anim_num
+.return
+    rts 
+
+smooth_anim_enable:
+    !i #= 0
+    while !i < !max_gfx_num
+        %internal_number_to_string(!i)
+        if stringsequal("!{gfx_!{_num}_path}", "0")
+            db $00
+        else
+            db !{gfx_!{_num}_animations_exist} 
+        endif
+        !i #= !i+1
+    endif
+
+smooth_anim_index_ptrs:
+    !i #= 0
+    while !i < !max_gfx_num
+        %internal_number_to_string(!i)
+        if stringsequal("!{gfx_!{_num}_path}", "0")
+            dw $FFFF
+        else
+            if !{gfx_!{_num}_animations_exist} == 1
+                dw gfx_!{_num}_smooth_anim_index
+            else 
+                dw $FFFF
+            endif
+        endif
+        !i #= !i+1
+    endif
+
+smooth_anim_init_timer_ptrs:
+    !i #= 0
+    while !i < !max_gfx_num
+        %internal_number_to_string(!i)
+        if stringsequal("!{gfx_!{_num}_path}", "0")
+            dw $FFFF
+        else
+            if !{gfx_!{_num}_animations_exist} == 1
+                dw gfx_!{_num}_smooth_anim_init_timer
+            else 
+                dw $FFFF
+            endif
+        endif
+        !i #= !i+1
+    endif
+
+smooth_anim_init_pose_ptrs:
+    !i #= 0
+    while !i < !max_gfx_num
+        %internal_number_to_string(!i)
+        if stringsequal("!{gfx_!{_num}_path}", "0")
+            dw $FFFF
+        else
+            if !{gfx_!{_num}_animations_exist} == 1
+                dw gfx_!{_num}_smooth_anim_init_pose
+            else 
+                dw $FFFF
+            endif
+        endif
+        !i #= !i+1
+    endif
+    
+smooth_anim_pointers_ptrs:
+    !i #= 0
+    while !i < !max_gfx_num
+        %internal_number_to_string(!i)
+        if stringsequal("!{gfx_!{_num}_path}", "0")
+            dw $FFFF
+        else
+            if !{gfx_!{_num}_animations_exist} == 1
+                dw gfx_!{_num}_smooth_anim_animations
+            else 
+                dw $FFFF
+            endif
+        endif
+        !i #= !i+1
+    endif
+
+smooth_anim_tables:
+    !i #= 0
+    while !i < !max_gfx_num
+        %internal_number_to_string(!i)
+        if not(stringsequal("!{gfx_!{_num}_path}", "0"))
+            if !{gfx_!{_num}_animations_exist} == 1
+                gfx_!{_num}_smooth_anim:
+                    incsrc "../!{gfx_!{_num}_path}/!{gfx_!{_num}_internal_name}_animations.asm"
+            endif
+        endif
+        !i #= !i+1
+    endif
+
+;################################################
+;# 
+
+pushpc
     org $00E18E|!bank
         player_default_cape_table:
             db $00,$00,$00,$00,$00,$00,$00,$00      ;[00-07]
@@ -140,326 +686,5 @@ pushpc
             dw $0010,$0018,$0000,$0010
             dw $0018,$0000,$0010,$0000
             dw $0010,$FFF8
-
-    org $00E3E4|!bank
-        BRA +
-    org $00E3EC|!bank
-    +
-
-
 pullpc
-
-reset bytes
-
-player_poses_handler:
-    lda !player_flash_timer
-    beq .not_flashing
-    lsr #3
-    tax 
-    lda.l $00E292|!bank,x
-    and !player_flash_timer
-    ora !player_frozen
-    ora $9D
-    bne .not_flashing
-    plb 
-    rtl 
-
-.not_flashing
-    phb
-    phk
-    plb
-
-    lda #$00
-    sta !player_extra_tile_settings         ; Extra graphics settings
-    sta !player_extra_tile_offset_x         ; Extra graphics relative X position
-    sta !player_extra_tile_offset_x+1
-    sta !player_extra_tile_offset_y         ; Extra graphics relative Y position
-    sta !player_extra_tile_offset_y+1
-    sta !player_extra_tile_frame             ; Extra graphics tile
-
-    lda !player_powerup
-    rep #$30
-    and #$00FF
-    asl 
-    tax 
-    lda.w powerup_image_pointers,x
-    sta $00
-    sep #$30
-    ldx #$00
-    jsr ($0000|!dp,x)
-.return_image
-
-if !ENABLE_POSE_DEBUG == !yes
-        lda $71
-        bne ++
-        lda $16
-        and #$04
-        beq +
-        lda !debug_ram
-        dec 
-        bmi +
-        sta !debug_ram
-    +   
-        lda $16
-        and #$08
-        beq +
-        lda !debug_ram
-        inc 
-        cmp #$80
-        bcs +
-        sta !debug_ram
-    +   
-        lda !debug_ram
-        sta !player_pose_num
-    ++
-endif
-
-    lda !player_graphics_bypass
-    bne .skip_setting_index
-.regular_gfx_rules
-    rep #$20
-    lda !player_powerup
-    and #$00FF
-    ldx !player_num
-    beq .p1
-.p2 
-    clc 
-    adc.w #!max_powerup_num
-.p1 
-    rep #$10
-    tax 
-    sep #$20
-    lda.l .index,x
-    sta !player_graphics_index
-    lda.l .extra_index,x
-    sta !player_graphics_extra_index
-.skip_setting_index
-
-    lda !player_graphics_index
-    rep #$30
-    and #$00FF
-    asl 
-    tax 
-    lda.w tilemap_logic_pointers,x
-    sta $00
-    sep #$30
-    ldx #$00
-    jsr ($0000|!dp,x)
-.return_tilemap
-
-    lda !player_graphics_index
-    rep #$20
-    and #$00FF
-    asl 
-    tax 
-    lda.w x_displacement_pointers,x
-    sta $6B
-    lda.w y_displacement_pointers,x
-    sta $6E
-    ldx.b #bank(x_displacement_pointers)
-    stx $6D
-    ldx.b #bank(y_displacement_pointers)
-    stx $70
-    sep #$20
-
-.end
-    plb
-    jml $00E3C0|!bank
-
-
-
-.index
-    !i #= 0
-    while !i < !max_powerup_num
-        %internal_number_to_string(!i)
-        if defined("powerup_!{_num}_p1_gfx_index")
-            db !{powerup_!{_num}_p1_gfx_index}
-        else
-            db $00
-        endif
-        !i #= !i+1
-    endif
-    !i #= 0
-    while !i < !max_powerup_num
-        %internal_number_to_string(!i)
-        if defined("powerup_!{_num}_p2_gfx_index")
-            db !{powerup_!{_num}_p2_gfx_index}
-        else
-            db $00
-        endif
-        !i #= !i+1
-    endif
-
-.extra_index
-    !i #= 0
-    while !i < !max_powerup_num
-        %internal_number_to_string(!i)
-        if defined("powerup_!{_num}_p1_extra_gfx_index")
-            db !{powerup_!{_num}_p1_extra_gfx_index}
-        else
-            db $00
-        endif
-        !i #= !i+1
-    endif
-    !i #= 0
-    while !i < !max_powerup_num
-        %internal_number_to_string(!i)
-        if defined("powerup_!{_num}_p2_extra_gfx_index")
-            db !{powerup_!{_num}_p2_extra_gfx_index}
-        else
-            db $00
-        endif
-        !i #= !i+1
-    endif
-
-
-
-
-player_x_disp_handler:
-    pha
-    lda !player_graphics_disp_settings
-    lsr 
-    bcs .ram_table
-.rom_table
-    pla 
-    phy
-    txy 
-    adc [$6B],y
-    ply 
-    rtl
-.ram_table
-    pla 
-    clc 
-    adc !player_graphics_x_disp,x
-    rtl
-
-    db $00,$3D,$00,$3D,$00,$3D,$46,$3D
-    db $46,$3D,$46,$3D
-
-player_y_disp_handler:
-    pha
-    lda !player_graphics_disp_settings
-    lsr 
-    bcs .ram_table
-.rom_table
-    pla 
-    phy
-    txy 
-    adc [$6E],y
-    ply 
-    rtl
-.ram_table
-    pla 
-    clc 
-    adc !player_graphics_y_disp,x
-    rtl
-
-player_walk_frames_handler:
-    phx
-    lda !player_graphics_index
-    tax 
-    lda.l gfx_walk_frames,x
-    plx
-    rtl
-
-
-
-powerup_image_pointers:
-    !i #= 0
-    while !i < !max_powerup_num
-        %internal_number_to_string(!i)
-        if stringsequal("!{powerup_!{_num}_path}", "0")
-            dw player_poses_handler_return_image
-        else
-            dw powerup_!{_num}_image
-        endif
-        !i #= !i+1
-    endif
-
-powerup_image_codes:
-    !i #= 0
-    while !i < !max_powerup_num
-        %internal_number_to_string(!i)
-        if not(stringsequal("!{powerup_!{_num}_path}", "0"))
-            powerup_!{_num}_image:
-                incsrc "../!{powerup_!{_num}_path}/!{powerup_!{_num}_internal_name}_image_code.asm"
-        endif
-        !i #= !i+1
-    endif
-
-
-tilemap_logic_pointers:
-    !i #= 0
-    while !i < !max_gfx_num
-        %internal_number_to_string(!i)
-        if stringsequal("!{gfx_!{_num}_path}", "0")
-            dw player_poses_handler_return_tilemap
-        else
-            if !{gfx_!{_num}_tilemap_exist} == 1
-                dw gfx_!{_num}_tilemap
-            else 
-                dw $FFFF
-            endif
-        endif
-        !i #= !i+1
-    endif
-
-tilemap_logic_codes:
-    !i #= 0
-    while !i < !max_gfx_num
-        %internal_number_to_string(!i)
-        if not(stringsequal("!{gfx_!{_num}_path}", "0"))
-            if !{gfx_!{_num}_tilemap_exist} == 1
-                gfx_!{_num}_tilemap:
-                    incsrc "../!{gfx_!{_num}_path}/!{gfx_!{_num}_internal_name}_tilemap.asm"
-            endif
-        endif
-        !i #= !i+1
-    endif
-
-
-x_displacement_pointers:
-    !i #= 0
-    while !i < !max_gfx_num
-        %internal_number_to_string(!i)
-        if stringsequal("!{gfx_!{_num}_path}", "0")
-            dw $FFFF
-        else
-            if !{gfx_!{_num}_tilemap_exist} == 1
-                dw gfx_!{_num}_tilemap_x_disp
-            else 
-                dw $FFFF
-            endif
-        endif
-        !i #= !i+1
-    endif
-
-y_displacement_pointers:
-    !i #= 0
-    while !i < !max_gfx_num
-        %internal_number_to_string(!i)
-        if stringsequal("!{gfx_!{_num}_path}", "0")
-            dw $FFFF
-        else
-            if !{gfx_!{_num}_tilemap_exist} == 1
-                dw gfx_!{_num}_tilemap_y_disp
-            else 
-                dw $FFFF
-            endif
-        endif
-        !i #= !i+1
-    endif
-
-gfx_walk_frames:
-    !i #= 0
-    while !i < !max_gfx_num
-        %internal_number_to_string(!i)
-        if not(stringsequal("!{gfx_!{_num}_path}", "0"))
-            if defined("gfx_!{_num}_walk_frames")
-                db !{gfx_!{_num}_walk_frames}-1
-            else
-                db $02
-            endif
-        endif
-        !i #= !i+1
-    endif
+    
