@@ -139,6 +139,17 @@
 
 
 ;################################################
+;# Index used for deciding which set of offsets will be used for the player
+;# Indexed by the table above and the player direction
+
+.disp_index
+    db $00,$08,$10,$18,$20,$28,$00,$00	;00-07
+    db $00,$00,$00,$00,$00,$00,$00,$00	;08-0F
+    db $00,$00,$00,$00,$00,$00,$00,$00	;10-17
+    db $00,$00,$00,$00	                ;18-1B
+    
+
+;################################################
 ;# Displacements in the X axis for each player tile
 ;# The indexes for this table are grabbed from .disp_index
 ;# Format: UL, DL, UR, DR

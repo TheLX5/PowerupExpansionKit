@@ -149,7 +149,6 @@
     db $00,$00,$00,$00	                ;18-1B
     
 
-
 ;################################################
 ;# Displacements in the X axis for each player tile
 ;# The indexes for this table are grabbed from .disp_index

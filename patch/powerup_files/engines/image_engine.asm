@@ -119,12 +119,7 @@ endif
     lda !player_pose_num
     sta !player_extended_anim_pose
 ..end
-    lda !player_extended_anim_pose
-    and #$0F
-    sta $0EFA|!addr
-    lda !player_extended_anim_pose
-    lsr #4
-    sta $0EF9|!addr
+
 
 .run_tilemap_logic
     lda !player_graphics_index
@@ -138,6 +133,7 @@ endif
     ldx #$00
     jsr ($0000|!dp,x)
 .return_tilemap
+
 
 .setup_player_displacements
     lda !player_graphics_index
@@ -379,7 +375,9 @@ player_walk_frames_handler:
     !i #= 0
     while !i < !max_gfx_num
         %internal_number_to_string(!i)
-        if not(stringsequal("!{gfx_!{_num}_path}", "0"))
+        if stringsequal("!{gfx_!{_num}_path}", "0")
+            db $02
+        else 
             if defined("gfx_!{_num}_walk_frames")
                 db !{gfx_!{_num}_walk_frames}-1
             else
@@ -389,10 +387,12 @@ player_walk_frames_handler:
         !i #= !i+1
     endif
 
+
 ;################################################
 ;# 
 
 smooth_animations:
+
     lda !player_pose_num
     cmp !player_previous_pose_num
     beq .not_new_animation
@@ -405,10 +405,6 @@ smooth_animations:
     rep #$20
     lda.w smooth_anim_index_ptrs,x
     sta $00
-    lda.w smooth_anim_init_timer_ptrs,x
-    sta $02
-    lda.w smooth_anim_init_pose_ptrs,x
-    sta $04
     sep #$20
 
     lda ($00),y
@@ -416,10 +412,7 @@ smooth_animations:
     beq .abort
     lda #$FF
     sta !player_extended_anim_index
-    lda ($02),y
-    sta !player_extended_anim_timer
-    lda ($04),y
-    sta !player_extended_anim_pose
+    bra .next_smooth_frame
 
 .not_new_animation
     lda !player_extended_anim_num
@@ -432,7 +425,7 @@ smooth_animations:
     rts 
 
 .abort
-    tya
+    tya 
     sta !player_extended_anim_pose
     rts 
 
@@ -462,10 +455,24 @@ smooth_animations:
     sta !player_extended_anim_pose
     xba 
     sta !player_extended_anim_timer
-    inc
-    bne .return
-    stz !player_extended_anim_num
+    cmp #$FF
+    beq .end_animation
+    cmp #$FE
+    beq .loop_animation
+    cmp #$FD
+    beq .jump_to_animation
 .return
+    rts 
+.jump_to_animation
+    xba 
+    inc 
+    sta !player_extended_anim_num
+.loop_animation
+    lda #$FF
+    sta !player_extended_anim_index
+    jmp .next_smooth_frame
+.end_animation
+    stz !player_extended_anim_num
     rts 
 
 smooth_anim_enable:
@@ -496,38 +503,6 @@ smooth_anim_index_ptrs:
         !i #= !i+1
     endif
 
-smooth_anim_init_timer_ptrs:
-    !i #= 0
-    while !i < !max_gfx_num
-        %internal_number_to_string(!i)
-        if stringsequal("!{gfx_!{_num}_path}", "0")
-            dw $FFFF
-        else
-            if !{gfx_!{_num}_animations_exist} == 1
-                dw gfx_!{_num}_smooth_anim_init_timer
-            else 
-                dw $FFFF
-            endif
-        endif
-        !i #= !i+1
-    endif
-
-smooth_anim_init_pose_ptrs:
-    !i #= 0
-    while !i < !max_gfx_num
-        %internal_number_to_string(!i)
-        if stringsequal("!{gfx_!{_num}_path}", "0")
-            dw $FFFF
-        else
-            if !{gfx_!{_num}_animations_exist} == 1
-                dw gfx_!{_num}_smooth_anim_init_pose
-            else 
-                dw $FFFF
-            endif
-        endif
-        !i #= !i+1
-    endif
-    
 smooth_anim_pointers_ptrs:
     !i #= 0
     while !i < !max_gfx_num
