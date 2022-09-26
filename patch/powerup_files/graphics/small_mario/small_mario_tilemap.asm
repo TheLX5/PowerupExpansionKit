@@ -1,42 +1,159 @@
+;##################################################################################################
+;# GFX set: Small Mario
+;# Author: Nintendo
+;# Description: Default set for Big Mario
 
-    ; setup tile size
+;################################################
+;# Code for handling the tilemap logic
+;# Requires filling the following RAM:
+;#  $04: Size of the player OAM tiles, usually $F8
+;#  $05: Displacement index to use
+;#  $06: Always zero
+;#  $0A: Tilemap number
+
     lda #$F8
     sta $04
-
-    ldx !player_pose_num
-    %tilemap_large(.tilemap, .displacement_index, .displacement_index_index)
-
+    lda !player_extended_anim_pose
+    tax 
+    lda.w .tilemap,x
+    sta $0A
+    stz $06
+    lda.w .index_for_disp_index,x
+    ora !player_direction
+    tay
+    lda.w .disp_index,y
+    sta $05
     rts
 
-.tilemap
-    db $00,$01,$01,$03,$04,$05,$05,$07	;1
-    db $08,$08,$0A,$0B,$0C,$0D,$0E,$0F	;2
-    db $10,$11,$12,$12,$14,$15,$16,$17	;3
-    db $18,$19,$1A,$1B,$1C,$1D,$1E,$1F	;4
-    db $20,$21,$22,$23,$24,$25,$26,$27	;5
-    db $28,$20,$80,$80,$80,$80,$80,$80	;6
-    db $30,$31,$32,$33,$34,$35,$36,$37	;7
-    db $38,$39,$3A,$3B,$3C	;8
-;misc
-    db $3D,$3E,$3F
-    db $80,$80,$2A,$2A,$2C,$2D,$2E
 
-.displacement_index
+;################################################
+;# Player images table
+;# Indexed by the current player pose number ($13E0)
+;# Can be expanded up to 127 entries if extra poses are needed
+
+.tilemap
+    db $00                  ; [00]      Idle
+    db $01,$01              ; [01-02]   Walking
+    db $03                  ; [03]      Looking up
+    db $04,$05,$05          ; [04-06]   Running
+    db $07                  ; [07]      Idle, holding an item
+    db $08,$08              ; [08-09]   Walking, holding an item; second byte is also used for Jumping/Falling
+    db $0A                  ; [0A]      Looking up, holding an item
+    db $0B                  ; [0B]      Jumping
+    db $0C                  ; [0C]      Jumping, max speed
+    db $0D                  ; [0D]      Braking
+    db $0E                  ; [0E]      Kicking item
+    db $0F                  ; [0F]      Looking to camera; spinjump pose, going into a pipe pose
+    db $10                  ; [10]      Diagonal
+    db $11,$12,$12          ; [11-13]   Running in wall
+    db $14                  ; [14]      Victory pose, on Yoshi
+    db $15                  ; [15]      Climbing
+    db $16,$17              ; [16-17]   Swimming Idle; second byte is used for holding an item
+    db $18,$19              ; [18-19]   Swimming #1; second byte is used for holding an item
+    db $1A,$1B              ; [1A-1B]   Swimming #2; second byte is used for holding an item
+    db $1C                  ; [1C]      Sliding
+    db $1D                  ; [1D]      Crouching, holding an item
+    db $1E                  ; [1E]      Punching a net
+    db $1F                  ; [1F]      Turning around on Yoshi, showing back
+    db $20                  ; [20]      Mounted on Yoshi
+    db $21                  ; [21]      Turning around on Yoshi, facing camera; going into a pipe
+    db $22                  ; [22]      Climbing, facing camera
+    db $23                  ; [23]      Punching a net, facing camera
+    db $24                  ; [24]      Falling
+    db $25                  ; [25]      Showing back; spinjump pose
+    db $26                  ; [26]      Victory pose
+    db $27,$28              ; [27-28]   Commanding Yoshi
+    db $20                  ; [29]      Crouching on Yoshi; also used for going into a pipe
+    db $FF,$FF              ; [2A-2B]   Flying with cape
+    db $FF                  ; [2C]      Slide with cape while flying
+    db $FF,$FF,$FF          ; [2D-2F]   Dive with cape
+    db $30,$31              ; [30-31]   Burned, cutscene poses
+    db $32                  ; [32]      Looking in front, cutscene pose
+    db $33,$34              ; [33-34]   Looking at the distance, cutscene pose
+    db $35,$36,$37          ; [35-37]   Using a hammer, cutscene pose
+    db $38,$39              ; [38-39]   Using a mop, cutscene pose
+    db $3A,$3B              ; [3A-3B]   Using a hammer, cutscene pose, most likely unused
+    db $3C			        ; [3C]      Crouching
+    db $3D                  ; [3D]      Shrinking/Growing
+    db $3E                  ; [3E]      Dead
+    db $3F                  ; [3F]      Shooting fireball
+    db $7F,$7F              ; [40-41]   Unused
+    db $2A,$3A              ; [42-43]   Using P-Balloon 
+    db $2C,$2D,$2E          ; [44-46]   Copy of the spinjump poses
+
+
+;################################################
+;# Index for the table of indexes for deciding which set of offsets will be used on the player
+;# Indexed by the current player pose number ($13E0)
+;# Can be expanded up to 127 entries if extra poses are needed
+
+.index_for_disp_index
+    db $00                  ; [00]      Idle
+    db $00,$00              ; [01-02]   Walking
+    db $00                  ; [03]      Looking up
+    db $00,$00,$00          ; [04-06]   Running
+    db $00                  ; [07]      Idle, holding an item
+    db $00,$00              ; [08-09]   Walking, holding an item; second byte is also used for Jumping/Falling
+    db $00                  ; [0A]      Looking up, holding an item
+    db $00                  ; [0B]      Jumping
+    db $00                  ; [0C]      Jumping, max speed
+    db $00                  ; [0D]      Braking
+    db $00                  ; [0E]      Kicking item
+    db $00                  ; [0F]      Looking to camera; spinjump pose, going into a pipe pose
+    db $04                  ; [10]      Diagonal
+    db $02,$02,$02          ; [11-13]   Running in wall
+    db $00                  ; [14]      Victory pose, on Yoshi
+    db $00                  ; [15]      Climbing
+    db $00,$00              ; [16-17]   Swimming Idle; second byte is used for holding an item
+    db $00,$00              ; [18-19]   Swimming #1; second byte is used for holding an item
+    db $00,$00              ; [1A-1B]   Swimming #2; second byte is used for holding an item
+    db $00                  ; [1C]      Sliding
+    db $00                  ; [1D]      Crouching, holding an item
+    db $00                  ; [1E]      Punching a net
+    db $00                  ; [1F]      Turning around on Yoshi, showing back
+    db $00                  ; [20]      Mounted on Yoshi
+    db $00                  ; [21]      Turning around on Yoshi, facing camera; going into a pipe
+    db $00                  ; [22]      Climbing, facing camera
+    db $00                  ; [23]      Punching a net, facing camera
+    db $00                  ; [24]      Falling
+    db $00                  ; [25]      Showing back; spinjump pose
+    db $00                  ; [26]      Victory pose
+    db $00,$00              ; [27-28]   Commanding Yoshi
+    db $00                  ; [29]      Crouching on Yoshi; also used for going into a pipe
+    db $00,$00              ; [2A-2B]   Flying with cape
+    db $00                  ; [2C]      Slide with cape while flying
+    db $00,$00,$00          ; [2D-2F]   Dive with cape
+    db $00,$00              ; [30-31]   Burned, cutscene poses
+    db $00                  ; [32]      Looking in front, cutscene pose
+    db $00,$00              ; [33-34]   Looking at the distance, cutscene pose
+    db $00,$00,$00          ; [35-37]   Using a hammer, cutscene pose
+    db $00,$00              ; [38-39]   Using a mop, cutscene pose
+    db $00,$00              ; [3A-3B]   Using a hammer, cutscene pose, most likely unused
+    db $00			        ; [3C]      Crouching
+    db $00                  ; [3D]      Shrinking/Growing
+    db $00                  ; [3E]      Dead
+    db $00                  ; [3F]      Shooting fireball
+    db $00,$00              ; [40-41]   Unused
+    db $00,$00              ; [42-43]   Using P-Balloon 
+    db $00,$00,$00          ; [44-46]   Copy of the spinjump poses
+
+
+;################################################
+;# Index used for deciding which set of offsets will be used for the player
+;# Indexed by the table above and the player direction
+
+.disp_index
     db $00,$08,$10,$18,$20,$28,$00,$00	;00-07
     db $00,$00,$00,$00,$00,$00,$00,$00	;08-0F
     db $00,$00,$00,$00,$00,$00,$00,$00	;10-17
-    db $00,$00,$00,$00	;18-1B
+    db $00,$00,$00,$00	                ;18-1B
     
-.displacement_index_index
-    db $00,$00,$00,$00,$00,$00,$00,$00	;00-07	\
-    db $00,$00,$00,$00,$00,$00,$00,$00	;08-0F	|
-    db $04,$02,$02,$02,$00,$00,$00,$00	;10-17	|
-    db $00,$00,$00,$00,$00,$00,$00,$00	;18-1F	|
-    db $00,$00,$00,$00,$00,$00,$00,$00	;20-27	|Mario's pose number
-    db $00,$00,$00,$00,$00,$00,$00,$00	;28-2F	|
-    db $00,$00,$00,$00,$00,$00,$00,$00	;30-37	|
-    db $00,$00,$00,$00,$00,$00,$00,$00	;38-3F	|
-    db $00,$00,$00,$00,$00,$00,$00	;40-46	/
+
+
+;################################################
+;# Displacements in the X axis for each player tile
+;# The indexes for this table are grabbed from .disp_index
+;# Format: UL, DL, UR, DR
 
 .x_disp
     dw $FFF8,$FFF8,$0008,$0008	;[00]	Normal (facing left)
@@ -71,6 +188,11 @@
     dw $000D,$000D,$FFFB,$FFFB
     dw $FFFB,$FFFF,$000F,$0001
     dw $FFF9,$0000
+
+;################################################
+;# Displacements in the Y axis for each player tile
+;# The indexes for this table are grabbed from .disp_index
+;# Format: UL, DL, UR, DR
 
 .y_disp
     dw $0001,$0011,$0001,$0011	;[00]	Normal (facing left)
