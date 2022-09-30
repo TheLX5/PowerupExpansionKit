@@ -6,6 +6,7 @@
 if canreadfile1("../../powerup_defs_path.asm",0)
     incsrc "../../powerup_defs_path.asm"
     if canreadfile1("!powerup_defs_path", 0)
+        !_external_call = 1
         incsrc "!powerup_defs_path"
     else
         error "Please provide a proper path for powerup_defs.asm file that comes with the Powerup expansion kit patch."
