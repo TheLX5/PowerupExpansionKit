@@ -24,10 +24,6 @@
 ;# Enable riding Yoshi with this powerup.
 !small_can_ride_yoshi = !yes
 
-;# Enable custom interaction with sprites.
-!small_custom_interaction = !no
-
-
 
 ;################################################
 ;# Powerdown
@@ -39,6 +35,7 @@
 
 ;# Item ID associated to this powerup.
 !small_item_id = $FF
+
 
 ;################################################
 ;# Graphics/Player image
@@ -75,6 +72,40 @@
 
 ;# Same as above, but when the player is riding Yoshi
 !small_water_y_disp_on_yoshi = $FFFC
+
+
+;################################################
+;# Hitbox, interaction & collision options
+
+;# Player's hitbox X displacement from player's origin
+!small_hitbox_x_disp = $0002
+
+;# Player's hitbox width
+!small_hitbox_width = $0C
+
+;# Player's hitbox Y displacement from player's origin
+!small_hitbox_y_disp = $0014
+
+;# Player's hitbox height
+!small_hitbox_height = $0C
+
+;# Player's hitbox Y displacement from player's origin while crouching
+!small_hitbox_y_disp_crouching = $0014
+
+;# Player's hitbox height while crouching
+!small_hitbox_height_crouching = $0C
+
+;# Player's hitbox Y displacement from player's origin while mounted on Yoshi
+!small_hitbox_y_disp_on_yoshi = $0018
+
+;# Player's hitbox height while mounted on Yoshi
+!small_hitbox_height_on_yoshi = $18
+
+;# Player's hitbox Y displacement from player's origin while crouching and mounted on Yoshi
+!small_hitbox_y_disp_crouching_on_yoshi = $0018
+
+;# Player's hitbox height while crouching and mounted on Yoshi
+!small_hitbox_height_crouching_on_yoshi = $18
 
 
 ;################################################

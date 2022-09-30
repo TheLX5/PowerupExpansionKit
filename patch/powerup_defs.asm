@@ -176,7 +176,16 @@ macro setup_general_defines(num)
     !powerup_<num>_water_y_disp := !{!{_name}_water_y_disp}
     !powerup_<num>_water_y_disp_on_yoshi := !{!{_name}_water_y_disp_on_yoshi}
 
-    !powerup_<num>_custom_interaction := !{!{_name}_custom_interaction}
+    !powerup_<num>_hitbox_x_disp := !{!{_name}_hitbox_x_disp}
+    !powerup_<num>_hitbox_y_disp := !{!{_name}_hitbox_y_disp}
+    !powerup_<num>_hitbox_y_disp_crouching := !{!{_name}_hitbox_y_disp_crouching}
+    !powerup_<num>_hitbox_y_disp_on_yoshi := !{!{_name}_hitbox_y_disp_on_yoshi}
+    !powerup_<num>_hitbox_y_disp_crouching_on_yoshi := !{!{_name}_hitbox_y_disp_crouching_on_yoshi}
+    !powerup_<num>_hitbox_width := !{!{_name}_hitbox_width}
+    !powerup_<num>_hitbox_height := !{!{_name}_hitbox_height}
+    !powerup_<num>_hitbox_height_crouching := !{!{_name}_hitbox_height_crouching}
+    !powerup_<num>_hitbox_height_on_yoshi := !{!{_name}_hitbox_height_on_yoshi}
+    !powerup_<num>_hitbox_height_crouching_on_yoshi := !{!{_name}_hitbox_height_crouching_on_yoshi}
 endmacro
 
 macro setup_general_gfx_defines(num)
@@ -238,12 +247,13 @@ endmacro
 ;############################################################
 ;# DSS inclusion
 
+!_external_call ?= 0
 if !_error_detected == 0
     if read3($01DF78) != $535344
         !_error_msg = "DSS isn't present on the ROM. Please insert DSS before the Powerup expansion kit."
         !_error_detected = 1
     else
-        if read2($01DF7B) != 0200
+        if read2($01DF7B) < 0200
             !_error_msg = "DSS versions prior to 2.00 aren't supported by the Powerup expansion kit."
             !_error_detected = 1
         else
@@ -252,7 +262,9 @@ if !_error_detected == 0
                 !_error_detected = 1
             else
                 incsrc "!dss_defines_file_path"
-                incsrc "!pixi_defines_file_path"
+                if !_external_call == 0
+                    incsrc "!pixi_defines_file_path"
+                endif
             endif
         endif
     endif
@@ -427,7 +439,9 @@ endif
 !mask_controller_15             = !player_backup_slippery_status+1
 !mask_controller_17             = !mask_controller_15+1
 
-!debug_ram                      = !mask_controller_17+1
+!player_animation_ram           = !mask_controller_17+1
+
+!debug_ram                      = !player_animation_ram+$40
 
 !extra_sprite_ram               = !SprSize*4
 !extra_extended_ram             = !Extendedsize*5

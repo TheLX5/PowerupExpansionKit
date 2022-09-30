@@ -7,4 +7,4 @@
 ;# 
 ;# Note: In order to use this code, enable custom sprite interactions in the defs file.
 
-	rts
+    jmp sprite_custom_interaction_run_vanilla
