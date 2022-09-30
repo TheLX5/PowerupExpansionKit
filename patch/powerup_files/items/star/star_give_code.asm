@@ -8,7 +8,7 @@
 ;# Runs whenever the player touches the powerup item
 
 .collected
-    jsl $01C580|!addr
+    jsl $01C580|!bank
     if !star_collected_sfx_num != $00
         lda.b #!star_collected_sfx_num
         sta.w !star_collected_sfx_port|!addr
