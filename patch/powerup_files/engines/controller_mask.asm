@@ -1,6 +1,6 @@
 pushpc
     org $0086C1|!bank
-        jsl controller_mask
+        autoclean jsl controller_mask
 pullpc
 
 controller_mask:

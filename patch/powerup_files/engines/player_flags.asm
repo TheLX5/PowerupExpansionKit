@@ -37,7 +37,7 @@ crouching_flag:
 
 pushpc
     org $00CD5E
-        jsl climb_flag
+        autoclean jsl climb_flag
 pullpc
 
 climb_flag:

@@ -3,9 +3,9 @@
 
 pushpc
     org $00FDB4|!bank
-        jml expand_water_splash_1
+        autoclean jml expand_water_splash_1
     org $00FDD6|!bank
-        jml expand_water_splash_2
+        autoclean jml expand_water_splash_2
 pullpc
 
 expand_water_splash_1:
