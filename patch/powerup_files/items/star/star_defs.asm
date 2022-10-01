@@ -7,7 +7,7 @@
 ;# Properties
 
 ;# YXPPCCCT properties for this item. Only the CCCT portion is used.
-!star_sprite_prop = $0B
+!star_sprite_prop = $01
 
 ;# Acts like setting for the item. Similar to custom sprites.
 ;# Might not affect the actual behavior of the item.
