@@ -7,6 +7,12 @@ pushpc
             endif
             rts 
 
+    org $028008
+        item_box_drop_hijack:
+            if !disable_item_box == !no
+                autoclean jsl item_box_drop_main
+            endif
+            rtl
 pullpc 
 
 if !disable_item_box == !no
@@ -94,6 +100,55 @@ if !disable_item_box == !no
 
 endif
 
+item_box_drop_main:
+    lda !player_item_box
+    bne .item
+.no_item
+    rtl
+.item 
+    phb 
+    phk 
+    plb 
+    phx 
+    dec 
+    sta $0E
+    stz $0F
+    if !item_box_drop_sfx != $00
+        lda.b #!item_box_drop_sfx
+        sta !item_box_drop_port|!addr
+    endif
+    jsr .process
+    stz !player_item_box
+    plx 
+    plb 
+    rtl 
+
+.process
+    rep #$30
+    lda $0E
+    and #$007F
+    asl 
+    tay 
+    lda.w .item_ptrs,y
+    sta $00
+    sep #$30
+    jmp (!dp)
+
+.return
+    rts 
+
+.item_ptrs
+    !i #= 0
+    while !i < !max_item_num
+        %internal_number_to_string(!i)
+        if not(stringsequal("!{item_!{_num}_path}", "0"))
+            dw item_!{_num}_give_item_box_drop
+        else
+            dw item_box_drop_main_return
+        endif
+        !i #= !i+1
+    endif
+
 find_and_queue_gfx:
     phx
     pha 
@@ -112,3 +167,58 @@ find_and_queue_gfx:
     pla 
     plx
     jml [!dp]
+
+spawn_item:
+    jsr find_sprite_slot
+    phx 
+    txy 
+    lda #$00
+    xba 
+    lda $0E
+    sta !extra_byte_1,x
+    jsr goal_tape_item_get_pointer
+    plx
+    lda #$08
+    sta !14C8,x 
+    lda.b #!item_box_spawn_x_pos
+    clc 
+    adc $1A
+    sta !E4,x
+    lda $1B
+    adc #$00
+    sta !14E0,x
+    lda.b #!item_box_spawn_y_pos
+    clc
+    adc $1C
+    sta !D8,x
+    lda $1D
+    adc #$00
+    sta !14D4,x
+    rts 
+
+
+find_sprite_slot:
+    ldx.b #!SprSize-1
+.loop
+    lda !14C8,x
+    beq .found_slot
+    dex 
+    bpl .loop
+    dec $1861|!addr
+    bpl .force_slot
+    lda #$01
+    sta $1861|!addr
+.force_slot
+    lda $1861|!addr
+    clc 
+    adc #$0A
+    tax 
+    lda !9E,x
+    cmp #$7D
+    bne .found_slot
+    lda !14C8,x
+    cmp #$0B
+    bne .found_slot
+    stz $13F3|!addr
+.found_slot
+    rts 

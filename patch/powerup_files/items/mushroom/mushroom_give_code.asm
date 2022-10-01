@@ -62,6 +62,17 @@
         !i #= !i+1
     endif
 
+
+;################################################
+;# Put in item box logic
+;# Runs when the player touches a powerup item
+
+.item_box_drop
+    jsr spawn_item
+    inc !item_falling,x
+    rts 
+
+
 ;################################################
 ;# Routine to instantly give a powerup without any animation/effect
 

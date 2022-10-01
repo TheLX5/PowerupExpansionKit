@@ -22,6 +22,10 @@ pushpc
         give_item_handler_hijack:
             autoclean jsl give_item_handler
             rts 
+    
+    org $02894F|!bank
+        generate_item_from_blocks_hijack:
+            autoclean jsl generate_item_from_blocks
 
     org $02ACE5|!bank
         give_points:
@@ -279,6 +283,25 @@ give_powerup:
         !j #= !j+1
     endif
 
+generate_item_from_blocks:
+    sta !9E,x
+    sta $0E
+    cmp #$74
+    bcc .not_an_item
+    cmp #$79
+    bcs .not_an_item
+    txy 
+    lda #$00
+    xba 
+    lda $0E
+    sec 
+    sbc #$74
+    sta !extra_byte_1,x
+    jsr goal_tape_item_get_pointer
+    rtl 
+.not_an_item
+    jml init_sprite_tables
+
 goal_tape_item:
     ldx !player_powerup
     rep #$10
@@ -371,6 +394,7 @@ goal_tape_item:
     bcc .no_overflow
     lda #$00
 .no_overflow
+.get_pointer
     rep #$30
     sta $00
     asl 
