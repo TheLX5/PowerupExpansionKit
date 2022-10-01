@@ -455,7 +455,7 @@ while readfile1("!gfx_list_path", !_position, $FF) != $FF
         if canreadfile1("!_path/!_gfx_name.bin", 0)
             ; regular gfx exist, expecting disp, tilemap and palettes for it, extra gfx and animation files are optional
             !{gfx_!{_gfx_num}_gfx_exist} = 1
-            !_included_files += "GFX,"
+            !_included_files += "GFX"
             if canreadfile1("!_path/!{_gfx_name}_extra.bin", 0)
                 !{gfx_!{_gfx_num}_extra_gfx_exist} = 1
                 !_included_files += ", extra GFX"
