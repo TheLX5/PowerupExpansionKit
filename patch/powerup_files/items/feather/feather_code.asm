@@ -21,10 +21,6 @@
     jsl init_sprite_tables
     lda.b #!feather_sprite_prop
     sta !15F6,x
-    lda.b #!feather_dss_page
-    xba 
-    lda.b #!feather_dss_id
-    jsl find_and_queue_gfx
     rts
 
 
