@@ -6,8 +6,13 @@
 ;################################################
 ;# Properties
 
-;# YXPPCCCT properties for this powerup item. Only the CCCT portion is used.
+;# YXPPCCCT properties for this item. Only the CCCT portion is used.
 !1up_mushroom_sprite_prop = $0B
+
+;# Acts like setting for the item. Similar to custom sprites.
+;# Might not affect the actual behavior of the item.
+;# This should be between $74 and $78.
+!1up_mushroom_acts_like = $78
 
 
 ;################################################
@@ -26,7 +31,7 @@
 
 ;# Points that will be given when collecting this item
 ;# Valid values: https://smwc.me/m/smw/rom/02ACE5
-!1up_mushroom_collected_points = $04
+!1up_mushroom_collected_points = $08
 
 
 ;################################################

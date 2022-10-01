@@ -6,8 +6,13 @@
 ;################################################
 ;# Properties
 
-;# YXPPCCCT properties for this powerup item. Only the CCCT portion is used.
+;# YXPPCCCT properties for this item. Only the CCCT portion is used.
 !feather_sprite_prop = $05
+
+;# Acts like setting for the item. Similar to custom sprites.
+;# Might not affect the actual behavior of the item.
+;# This should be between $74 and $78.
+!feather_acts_like = $77
 
 
 ;################################################

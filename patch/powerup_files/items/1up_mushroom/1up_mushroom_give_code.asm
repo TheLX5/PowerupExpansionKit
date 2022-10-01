@@ -8,7 +8,7 @@
 ;# Runs whenever the player touches the powerup item
 
 .collected
-    if !1up_mushroom_collected_points != $00
+    if !1up_mushroom_collected_sfx_num != $00
         lda #!1up_mushroom_collected_sfx_num
         sta.w !1up_mushroom_collected_sfx_port|!addr
     endif
