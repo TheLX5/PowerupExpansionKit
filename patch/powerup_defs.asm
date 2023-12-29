@@ -196,6 +196,8 @@ endmacro
 
 macro setup_general_item_defines(num)
     !_name := !item_<num>_internal_name
+    
+    !item_<num>_acts_like := !{!{_name}_acts_like}
 
     !item_<num>_sprite_prop := !{!{_name}_sprite_prop}&$0F
     !item_<num>_dss_id := !{!{_name}_dss_id}
@@ -338,6 +340,13 @@ endif
 !player_disable_collision       = $185C|!addr
 !player_stomp_count             = $18D2|!addr
 !player_frozen                  = $13FB|!addr
+!player_punching                = $149E|!addr
+!player_kicking                 = $149A|!addr
+!player_picking_up              = $1498|!addr
+!player_facing_screen           = $1499|!addr
+!player_in_cloud                = $18C2|!addr
+!player_looking_up              = $13DE|!addr
+!player_turning_around          = $13DD|!addr
 
 !player_item_box_2              = $0DBC|!addr
 !player_item_box                = $0DC2|!addr
@@ -409,8 +418,9 @@ endif
 !player_extra_tile_offset_x     = !player_extra_tile_settings+1
 !player_extra_tile_offset_y     = !player_extra_tile_offset_x+2
 !player_extra_tile_frame        = !player_extra_tile_offset_y+2
+!player_extra_tile_oam          = !player_extra_tile_frame+2
 
-!player_hitbox_flag             = !player_extra_tile_frame+2
+!player_hitbox_flag             = !player_extra_tile_oam+2
 !player_hitbox_width            = !player_hitbox_flag+1
 !player_hitbox_height           = !player_hitbox_width+1
 !player_hitbox_disp_x           = !player_hitbox_height+1
@@ -439,7 +449,27 @@ endif
 !mask_controller_15             = !player_backup_slippery_status+1
 !mask_controller_17             = !mask_controller_15+1
 
-!player_animation_ram           = !mask_controller_17+1
+!player_walking_frames                  = !mask_controller_17+1
+!player_idle_pose                       = !player_walking_frames+1
+!player_idle_carry_pose                 = !player_idle_pose+1
+!player_angled_pose                     = !player_idle_carry_pose+1
+!player_looking_up_pose                 = !player_angled_pose+1
+!player_looking_up_carry_pose           = !player_looking_up_pose+1
+!player_crouching_pose                  = !player_looking_up_carry_pose+1
+!player_crouching_with_item_pose        = !player_crouching_pose+1
+!player_shooting_fireball_pose          = !player_crouching_with_item_pose+1
+!player_shooting_fireball_in_air_pose   = !player_shooting_fireball_pose+1
+!player_kicking_pose                    = !player_shooting_fireball_in_air_pose+1
+!player_pick_up_pose                    = !player_kicking_pose+1
+!player_facing_screen_pose              = !player_pick_up_pose+1
+!player_jump_carry_pose                 = !player_facing_screen_pose+1
+!player_jump_pose                       = !player_jump_carry_pose+1
+!player_jump_max_speed_pose             = !player_jump_pose+1
+!player_falling_pose                    = !player_jump_max_speed_pose+1
+!player_braking_pose                    = !player_falling_pose+1
+!player_sliding_pose                    = !player_braking_pose+1
+
+!player_animation_ram           = !player_sliding_pose+1
 
 !debug_ram                      = !player_animation_ram+$40
 

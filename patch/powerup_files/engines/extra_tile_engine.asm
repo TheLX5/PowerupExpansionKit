@@ -15,11 +15,36 @@ cape_image:
 .hide_cape
     jml $00E458|!bank
 .cape_image
-    jml $00E401|!bank
+    phy 
+    lda !player_graphics_index
+    rep #$30
+    and #$00FF
+    sta $0C
+    asl 
+    clc 
+    adc $0C
+    tax 
+    lda.l .cape_indices_data,x
+    sta $0C
+    lda.l .cape_indices_data+$01,x
+    sta $0D
+    sep #$30
+    ldy !player_pose_num
+    lda [$0C],y
+    tax 
+    lda #$2C
+    sta $06
+    jml $00E40D|!bank
     
 .custom_tile
     lsr $78
     bcs .hide_cape
+    lda !player_extra_tile_settings
+    lsr #2
+    bcc ..regular_priority
+    lda !player_extra_tile_oam
+    tay 
+..regular_priority
     lda !player_extra_tile_frame
     sta $0C
     lda #$04
@@ -65,3 +90,19 @@ cape_image:
     inc $05
     inc $05 
     jml $00E458|!bank
+
+.cape_indices_data
+    !i #= 0
+    while !i < !max_gfx_num
+        %internal_number_to_string(!i)
+        if stringsequal("!{gfx_!{_num}_path}", "0")
+            dl $FFFFFF
+        else
+            if !{gfx_!{_num}_tilemap_exist} == 1
+                dl gfx_!{_num}_tilemap_cape_indices
+            else 
+                dl $FFFFFF
+            endif
+        endif
+        !i #= !i+1
+    endif

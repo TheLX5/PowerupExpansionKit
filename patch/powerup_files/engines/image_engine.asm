@@ -22,11 +22,114 @@ pushpc
     org $00E471|!bank
         autoclean jsl player_y_disp_handler
 
+    org $00E326|!bank
+        autoclean jml player_bopping
 
 
-    org $00CFEE|!bank
-        autoclean jsl player_walk_frames_handler
-        nop
+    org $00CEB1|!bank
+        autoclean jml player_primary_animation_logic
+        autoclean jml player_primary_animation_logic_horz_pipe
+        cape_spin_interaction:
+            phb
+            phk 
+            plb 
+            jsr $D044
+            plb 
+            rtl
+        player_update_speeds:
+            phb
+            phk 
+            plb 
+            jsr $DC2D
+            plb 
+            rtl 
+        player_apply_gravity:
+            phb
+            phk 
+            plb 
+            jsr $D92E
+            plb 
+            rtl 
+
+            
+    org $00D1A1         ; repoint primary animation logic hijack
+        jsl $00CEB5|!bank   
+
+
+
+    org $00D193                 ; Fix sprite masks during pipe animation
+        db $00,$6F,$1F,$00      ; not sure if it's going to mess anything...
+    org $00D1D1
+        eor #$10
+
+
+
+    org $00CEA1|!bank
+        db $00,$00,$01,$01
+    org $00CA31|!bank
+        autoclean jml player_peace_pose_handler
+    org $00CA3A|!bank
+        player_peace_pose_handler_return:
+
+    org $00D1A8|!bank
+        autoclean jml player_entering_door_pose_handler
+    org $00D1B2|!bank
+        player_entering_door_pose_handler_return:
+    org $00D209|!bank
+        autoclean jml player_vertical_pipe_pose_handler
+    org $00D20E|!bank
+        player_vertical_pipe_pose_handler_return:
+    org $00D22A|!bank
+        player_vertical_pipe_pose_handler_carry_return:
+    org $00D228|!bank
+        lda $00
+
+    org $00CDAD|!bank
+        autoclean jml player_on_yoshi_pose_handler
+    org $00CDC6|!bank
+        player_on_yoshi_pose_handler_return:
+
+    org $00D0B8|!bank
+        autoclean jml player_death_pose_handler
+    org $00D0BD|!bank
+        player_death_pose_handler_return:
+    org $00D10C|!bank
+        autoclean jml player_death_animation_handler
+    org $00D11C|!bank
+        player_death_animation_handler_return:
+
+    org $00D130|!bank
+        autoclean jsl player_grow_shrink_pose_handler
+
+    org $00D181|!bank
+        autoclean jml player_grab_flower_pose_handler
+    org $00D187|!bank
+        player_grab_flower_pose_handler_return:
+    
+    org $00DA8D|!bank
+        autoclean jml player_swimming_pose_handler
+    org $00DAA5|!bank
+        player_swimming_pose_handler_return:
+
+    org $00DBCA|!bank
+        autoclean jml player_climbing_pose_handler
+    org $00DBD0|!bank
+        player_climbing_pose_handler_return:
+    org $00DB78|!bank
+        autoclean jml player_climbing_turning_pose_handler
+    org $00DB8C|!bank
+        autoclean jml player_climbing_punching_pose_handler
+    org $00DB92|!bank
+        player_climbing_animaitons_handler_return:
+    
+    org $00CCD8|!bank
+        autoclean jsl player_stunned_pose_handler
+
+    org $00CD95|!bank
+        autoclean jml player_pballoon_pose_handler
+    org $00CDA5|!bank
+        player_pballoon_pose_handler_return:
+
 
 
     org $00E18E|!bank
@@ -238,6 +341,11 @@ powerup_animations:
         endif
         !i #= !i+1
     endif
+
+;################################################
+;# Global animations
+
+    incsrc "../graphics/global_animations.asm"
 
 ;################################################
 ;# Runs graphic set specific tilemap handling code
@@ -468,196 +576,16 @@ player_y_disp_handler:
         !i #= !i+1
     endif
 
-    
-;################################################
-;# Edit amount of walking poses
-
-player_walk_frames_handler:
-    phx
-    lda !player_graphics_index
-    tax 
-    lda.l .walk_frames,x
-    plx
-    rtl
-
-.walk_frames
-    !i #= 0
-    while !i < !max_gfx_num
-        %internal_number_to_string(!i)
-        if stringsequal("!{gfx_!{_num}_path}", "0")
-            db $02
-        else 
-            if defined("gfx_!{_num}_walk_frames")
-                db !{gfx_!{_num}_walk_frames}-1
-            else
-                db $02
-            endif
-        endif
-        !i #= !i+1
-    endif
-
 
 ;################################################
-;# Smooth animations handler
+;# Separate the file for animations
 
-smooth_animations:
-    lda !player_graphics_index
-    tay 
-    lda.w smooth_anim_enable,y
-    bne .enabled
-    lda !player_pose_num
-    sta !player_extended_anim_pose
-    rts 
-
-.enabled
-    lda !player_pose_num
-    cmp !player_previous_pose_num
-    beq .not_new_animation
-    sta !player_previous_pose_num
-    tay 
-
-    lda !player_graphics_index
-    asl 
-    tax 
-    rep #$20
-    lda.w smooth_anim_index_ptrs,x
-    sta $00
-    sep #$20
-
-    lda ($00),y
-    sta !player_extended_anim_num
-    beq .abort
-    lda #$FF
-    sta !player_extended_anim_index
-    bra .next_smooth_frame
-
-.not_new_animation
-    lda !player_extended_anim_num
-    beq .return
-
-    lda !player_extended_anim_timer
-    beq .next_smooth_frame
-    dec 
-    sta !player_extended_anim_timer
-    rts 
-
-.abort
-    tya 
-    sta !player_extended_anim_pose
-    rts 
-
-.next_smooth_frame
-    lda !player_extended_anim_index
-    inc 
-    sta !player_extended_anim_index
-
-    lda !player_extended_anim_index
-    asl 
-    pha
-    lda !player_extended_anim_num
-    dec 
-    asl 
-    tay 
-    lda !player_graphics_index
-    asl 
-    tax 
-    rep #$20
-    lda.w smooth_anim_pointers_ptrs,x
-    sta $00
-    lda ($00),y
-    sta $00
-    ply 
-    lda ($00),y
-    sep #$20
-    sta !player_extended_anim_pose
-    xba 
-    sta !player_extended_anim_timer
-    cmp #$FF
-    beq .end_animation
-    cmp #$FE
-    beq .loop_animation
-    cmp #$FD
-    beq .jump_to_animation
-.return
-    rts 
-.jump_to_animation
-    xba 
-    inc 
-    sta !player_extended_anim_num
-.loop_animation
-    lda #$FF
-    sta !player_extended_anim_index
-    jmp .next_smooth_frame
-.end_animation
-    stz !player_extended_anim_num
-    rts 
-
-smooth_anim_enable:
-    !i #= 0
-    while !i < !max_gfx_num
-        %internal_number_to_string(!i)
-        if stringsequal("!{gfx_!{_num}_path}", "0")
-            db $00
-        else
-            db !{gfx_!{_num}_animations_exist} 
-        endif
-        !i #= !i+1
-    endif
-
-smooth_anim_index_ptrs:
-    !i #= 0
-    while !i < !max_gfx_num
-        %internal_number_to_string(!i)
-        if stringsequal("!{gfx_!{_num}_path}", "0")
-            dw $FFFF
-        else
-            if !{gfx_!{_num}_animations_exist} == 1
-                dw gfx_!{_num}_smooth_anim_index
-            else 
-                dw $FFFF
-            endif
-        endif
-        !i #= !i+1
-    endif
-
-smooth_anim_pointers_ptrs:
-    !i #= 0
-    while !i < !max_gfx_num
-        %internal_number_to_string(!i)
-        if stringsequal("!{gfx_!{_num}_path}", "0")
-            dw $FFFF
-        else
-            if !{gfx_!{_num}_animations_exist} == 1
-                dw gfx_!{_num}_smooth_anim_animations
-            else 
-                dw $FFFF
-            endif
-        endif
-        !i #= !i+1
-    endif
-
-smooth_anim_tables:
-    !i #= 0
-    while !i < !max_gfx_num
-        %internal_number_to_string(!i)
-        if not(stringsequal("!{gfx_!{_num}_path}", "0"))
-            if !{gfx_!{_num}_animations_exist} == 1
-                gfx_!{_num}_smooth_anim:
-                    incsrc "../!{gfx_!{_num}_path}/!{gfx_!{_num}_internal_name}_animations.asm"
-            endif
-        endif
-        !i #= !i+1
-    endif
-
-;################################################
-;# Global animations
-
-    incsrc "../graphics/global_animations.asm"
-
+    incsrc "animation_logic.asm"
 
 ;################################################
 ;# Debug: Pose viewer
 
+if !ENABLE_POSE_DEBUG == !yes
 debug_pose_viewer:
     lda $71
     bne ++
@@ -682,3 +610,6 @@ debug_pose_viewer:
     sta !player_pose_num
 ++
     rts 
+endif
+
+

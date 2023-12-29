@@ -90,17 +90,41 @@ player_exgfx_pointers:
     endif
 
 player_exgfx_data:
+    !_size = 0
     !i #= 0
     while !i < !max_gfx_num
         %internal_number_to_string(!i)
         if not(stringsequal("!{gfx_!{_num}_path}", "0"))
             if !{gfx_!{_num}_gfx_exist} == 1
-                incbin "../!{gfx_!{_num}_path}/!{gfx_!{_num}_internal_name}.bin" -> gfx_!{_num}_graphics
+                !_size #= filesize("../!{gfx_!{_num}_path}/!{gfx_!{_num}_internal_name}.bin")
+                if !_size > $10000
+                    if defined("gfx_!{_num}_data_loc")
+                        pushpc
+                            !_loc #= !{gfx_!{_num}_data_loc}
+                            org (!_loc-$8008)|!bank
+                                db $53,$54,$41,$52
+                                dw $FFFF
+                                dw $0000
+                            org !_loc|!bank
+                                gfx_!{_num}_graphics:
+                                    incbin "../!{gfx_!{_num}_path}/!{gfx_!{_num}_internal_name}.bin" -> !_loc|!bank
+                            org (!_loc-$20000)|!bank
+                                db $53,$54,$41,$52
+                                dw clamp(!_size-$10009,0,$FFF7)
+                                dw clamp(!_size-$10009,0,$FFF7)^$FFFF
+                                .part2
+                        pullpc
+                    else
+                        print "ERROR: !{gfx_!{_num}_internal_name}.bin is over 64KiB! Please include a define named \!{gfx_!{_num}_data_loc} that contains the address where this file will be inserted to."
+                    endif
+                else
+                    incbin "../!{gfx_!{_num}_path}/!{gfx_!{_num}_internal_name}.bin" -> gfx_!{_num}_graphics
+                endif
             endif
         endif
         !i #= !i+1
     endif
-
+    
 player_extra_exgfx_pointers:
     !i #= 0
     while !i < !max_gfx_num
