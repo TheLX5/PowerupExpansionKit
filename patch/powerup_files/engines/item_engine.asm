@@ -7,6 +7,14 @@ pushpc
             dw item_engine_init_jump
             dw item_engine_init_jump
 
+    org ($0185CC+($74*$02))|!bank
+        item_engine_main_pointers:
+            dw item_engine_main_hijack
+            dw item_engine_main_hijack
+            dw item_engine_main_hijack
+            dw item_engine_main_hijack
+            dw item_engine_main_hijack
+
     org $01C510
         item_engine_init_jump:
             jml item_engine_init
